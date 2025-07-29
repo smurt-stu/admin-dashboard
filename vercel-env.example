@@ -1,0 +1,29 @@
+# Vercel Environment Variables Example
+# انسخ هذه المتغيرات إلى إعدادات Vercel
+
+# إعدادات التطبيق الأساسية
+NODE_ENV=production
+NEXTAUTH_URL=https://your-project-name.vercel.app
+NEXTAUTH_SECRET=your-super-secret-key-here-minimum-32-characters
+
+# إعدادات قاعدة البيانات (اختياري)
+DATABASE_URL=your-database-connection-string
+
+# إعدادات API
+API_BASE_URL=https://your-project-name.vercel.app/api
+SITE_URL=https://your-project-name.vercel.app
+
+# إعدادات إضافية
+NEXT_PUBLIC_APP_NAME=متجري
+NEXT_PUBLIC_APP_DESCRIPTION=متجر إلكتروني متكامل
+NEXT_PUBLIC_APP_VERSION=1.0.0
+
+# إعدادات الأمان
+NEXT_PUBLIC_ENABLE_ANALYTICS=true
+NEXT_PUBLIC_ENABLE_DEBUG=false
+
+# ملاحظات:
+# 1. استبدل 'your-project-name' باسم مشروعك الفعلي
+# 2. أنشئ NEXTAUTH_SECRET قوياً (32 حرف على الأقل)
+# 3. أضف DATABASE_URL إذا كنت تستخدم قاعدة بيانات
+# 4. تأكد من أن جميع URLs تستخدم HTTPS 
