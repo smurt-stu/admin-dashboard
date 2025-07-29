@@ -1,0 +1,22 @@
+1:"$Sreact.fragment"
+2:I[55478,["173","static/chunks/173-386372606080dc2d.js","177","static/chunks/app/layout-7a6b966b3fd2f835.js"],"default"]
+3:I[15244,[],""]
+4:I[43866,[],""]
+5:I[14547,[],"ClientSegmentRoot"]
+6:I[91291,["173","static/chunks/173-386372606080dc2d.js","581","static/chunks/app/admin/layout-c717dfe3d76eb15c.js"],"default"]
+8:I[57033,[],"ClientPageRoot"]
+9:I[13830,["173","static/chunks/173-386372606080dc2d.js","939","static/chunks/939-65d77c74543699f1.js","698","static/chunks/app/admin/page-471906d1574d3751.js"],"default"]
+c:I[86213,[],"OutletBoundary"]
+e:I[86213,[],"MetadataBoundary"]
+10:I[86213,[],"ViewportBoundary"]
+12:I[34835,[],""]
+:HL["/_next/static/media/569ce4b8f30dc480-s.p.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/_next/static/media/93f479601ee12b01-s.p.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/_next/static/css/797ddb2d98c0c331.css","style"]
+0:{"P":null,"b":"WQpaM6AOayjwRBAr_8c0-","p":"","c":["","admin"],"i":false,"f":[[["",{"children":["admin",{"children":["__PAGE__",{}]}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/797ddb2d98c0c331.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"lang":"ar","dir":"rtl","children":["$","body",null,{"className":"__variable_5cfdac __variable_9a8899 antialiased","children":["$","$L2",null,{"children":["$","$L3",null,{"parallelRouterKey":"children","segmentPath":["children"],"error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[],["$","div",null,{"className":"flex flex-col items-center justify-center h-screen text-center px-4","children":[["$","h1",null,{"className":"text-5xl md:text-5xl font-semibold text-gray-100","children":"404"}],["$","h1",null,{"className":"text-2xl md:text-3xl font-semibold mt-6","children":"This page has not been generated"}],["$","p",null,{"className":"mt-4 text-xl md:text-2xl text-gray-500","children":"Tell me what you would like on this page"}]]}]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]}]}]]}],{"children":["admin",["$","$1","c",{"children":[null,["$","$L5",null,{"Component":"$6","slots":{"children":["$","$L3",null,{"parallelRouterKey":"children","segmentPath":["children","admin","children"],"error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]},"params":{},"promise":"$@7"}]]}],{"children":["__PAGE__",["$","$1","c",{"children":[["$","$L8",null,{"Component":"$9","searchParams":{},"params":"$0:f:0:1:2:children:1:props:children:1:props:params","promises":["$@a","$@b"]}],null,["$","$Lc",null,{"children":"$Ld"}]]}],{},null,false]},null,false]},null,false],["$","$1","h",{"children":[null,["$","$1","on3153v-g9rxBEey-ICid",{"children":[["$","$Le",null,{"children":"$Lf"}],["$","$L10",null,{"children":"$L11"}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}]]}],false]],"m":"$undefined","G":["$12","$undefined"],"s":false,"S":true}
+7:{}
+a:{}
+b:{}
+11:[["$","meta","0",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
+f:[["$","meta","0",{"charSet":"utf-8"}],["$","title","1",{"children":"متجري - متجر إلكتروني متكامل"}],["$","meta","2",{"name":"description","content":"متجر إلكتروني متكامل يقدم أفضل المنتجات بأسعار مناسبة"}]]
+d:null

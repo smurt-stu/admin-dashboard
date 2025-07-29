@@ -1,0 +1,159 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.5.0/remixicon.min.css');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles for better responsive design */
+@layer base {
+  html {
+    font-family: 'Cairo', sans-serif;
+  }
+  
+  body {
+    direction: rtl;
+    text-align: right;
+  }
+  
+  /* Improve touch targets on mobile */
+  @media (max-width: 768px) {
+    button, a {
+      min-height: 44px;
+      min-width: 44px;
+    }
+  }
+  
+  /* Better table responsiveness */
+  @media (max-width: 768px) {
+    table {
+      font-size: 0.875rem;
+    }
+    
+    th, td {
+      padding: 0.5rem 0.25rem;
+    }
+  }
+}
+
+@layer components {
+  /* Responsive container */
+  .container-responsive {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  /* Mobile-first grid */
+  .grid-responsive {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8;
+  }
+  
+  /* Responsive text */
+  .text-responsive {
+    @apply text-sm sm:text-base lg:text-lg;
+  }
+  
+  .heading-responsive {
+    @apply text-2xl sm:text-3xl lg:text-4xl xl:text-5xl;
+  }
+  
+  /* Responsive spacing */
+  .section-responsive {
+    @apply py-8 sm:py-12 lg:py-16 xl:py-20;
+  }
+  
+  /* Mobile menu improvements */
+  .mobile-menu {
+    @apply fixed inset-0 z-50 bg-white transform transition-transform duration-300 ease-in-out;
+  }
+  
+  .mobile-menu.closed {
+    @apply translate-x-full;
+  }
+  
+  .mobile-menu.open {
+    @apply translate-x-0;
+  }
+  
+  /* Responsive card */
+  .card-responsive {
+    @apply bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6;
+  }
+  
+  /* Responsive button */
+  .btn-responsive {
+    @apply px-3 py-2 sm:px-4 sm:py-2 lg:px-6 lg:py-3 text-sm sm:text-base font-medium rounded-lg transition-colors duration-200;
+  }
+  
+  /* Responsive table */
+  .table-responsive {
+    @apply w-full overflow-x-auto;
+  }
+  
+  .table-responsive table {
+    @apply min-w-full divide-y divide-gray-200;
+  }
+  
+  /* Responsive sidebar */
+  .sidebar-responsive {
+    @apply fixed inset-y-0 right-0 z-40 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out;
+  }
+  
+  @media (max-width: 1024px) {
+    .sidebar-responsive {
+      @apply -translate-x-full;
+    }
+    
+    .sidebar-responsive.open {
+      @apply translate-x-0;
+    }
+  }
+}
+
+@layer utilities {
+  /* RTL specific utilities */
+  .rtl-space-x-reverse > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-x-reverse: 1;
+  }
+  
+  /* Responsive utilities */
+  .text-responsive-xs {
+    @apply text-xs sm:text-sm lg:text-base;
+  }
+  
+  .text-responsive-sm {
+    @apply text-sm sm:text-base lg:text-lg;
+  }
+  
+  .text-responsive-lg {
+    @apply text-lg sm:text-xl lg:text-2xl;
+  }
+  
+  .text-responsive-xl {
+    @apply text-xl sm:text-2xl lg:text-3xl;
+  }
+  
+  /* Responsive padding */
+  .p-responsive {
+    @apply p-4 sm:p-6 lg:p-8;
+  }
+  
+  .px-responsive {
+    @apply px-4 sm:px-6 lg:px-8;
+  }
+  
+  .py-responsive {
+    @apply py-4 sm:py-6 lg:py-8;
+  }
+  
+  /* Responsive margin */
+  .m-responsive {
+    @apply m-4 sm:m-6 lg:m-8;
+  }
+  
+  .mx-responsive {
+    @apply mx-4 sm:mx-6 lg:mx-8;
+  }
+  
+  .my-responsive {
+    @apply my-4 sm:my-6 lg:my-8;
+  }
+}

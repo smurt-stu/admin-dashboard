@@ -1,0 +1,20 @@
+1:"$Sreact.fragment"
+2:I[55478,["173","static/chunks/173-386372606080dc2d.js","177","static/chunks/app/layout-7a6b966b3fd2f835.js"],"default"]
+3:I[15244,[],""]
+4:I[43866,[],""]
+5:I[83788,["173","static/chunks/173-386372606080dc2d.js","974","static/chunks/app/page-2355ef4a4a371c56.js"],"default"]
+6:I[35252,["173","static/chunks/173-386372606080dc2d.js","974","static/chunks/app/page-2355ef4a4a371c56.js"],"default"]
+7:I[99082,["173","static/chunks/173-386372606080dc2d.js","974","static/chunks/app/page-2355ef4a4a371c56.js"],"default"]
+8:I[20792,["173","static/chunks/173-386372606080dc2d.js","974","static/chunks/app/page-2355ef4a4a371c56.js"],"default"]
+9:I[28705,["173","static/chunks/173-386372606080dc2d.js","974","static/chunks/app/page-2355ef4a4a371c56.js"],"default"]
+a:I[86213,[],"OutletBoundary"]
+c:I[86213,[],"MetadataBoundary"]
+e:I[86213,[],"ViewportBoundary"]
+10:I[34835,[],""]
+:HL["/_next/static/media/569ce4b8f30dc480-s.p.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/_next/static/media/93f479601ee12b01-s.p.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/_next/static/css/797ddb2d98c0c331.css","style"]
+0:{"P":null,"b":"WQpaM6AOayjwRBAr_8c0-","p":"","c":["",""],"i":false,"f":[[["",{"children":["__PAGE__",{}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/797ddb2d98c0c331.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"lang":"ar","dir":"rtl","children":["$","body",null,{"className":"__variable_5cfdac __variable_9a8899 antialiased","children":["$","$L2",null,{"children":["$","$L3",null,{"parallelRouterKey":"children","segmentPath":["children"],"error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[],["$","div",null,{"className":"flex flex-col items-center justify-center h-screen text-center px-4","children":[["$","h1",null,{"className":"text-5xl md:text-5xl font-semibold text-gray-100","children":"404"}],["$","h1",null,{"className":"text-2xl md:text-3xl font-semibold mt-6","children":"This page has not been generated"}],["$","p",null,{"className":"mt-4 text-xl md:text-2xl text-gray-500","children":"Tell me what you would like on this page"}]]}]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]}]}]]}],{"children":["__PAGE__",["$","$1","c",{"children":[["$","div",null,{"children":[["$","$L5",null,{}],["$","$L6",null,{}],["$","$L7",null,{}],["$","$L8",null,{}],["$","$L9",null,{}]]}],null,["$","$La",null,{"children":"$Lb"}]]}],{},null,false]},null,false],["$","$1","h",{"children":[null,["$","$1","MOXv4K-KCxjCL4mRVQMWO",{"children":[["$","$Lc",null,{"children":"$Ld"}],["$","$Le",null,{"children":"$Lf"}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}]]}],false]],"m":"$undefined","G":["$10","$undefined"],"s":false,"S":true}
+f:[["$","meta","0",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
+d:[["$","meta","0",{"charSet":"utf-8"}],["$","title","1",{"children":"متجري - متجر إلكتروني متكامل"}],["$","meta","2",{"name":"description","content":"متجر إلكتروني متكامل يقدم أفضل المنتجات بأسعار مناسبة"}]]
+b:null
