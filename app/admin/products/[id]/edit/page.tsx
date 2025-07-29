@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ProductService, Product, Category } from '../../../../../lib/productService';
+import { ProductService, CategoryService, Product, Category } from '../../../../../lib/products';
 
 interface ProductFormData {
   title: string; // Changed from { ar: string; en: string } to string
@@ -53,9 +53,9 @@ export default function EditProductPage() {
       const productData = await ProductService.getProduct(productId);
       setProduct(productData);
       setFormData({
-        title: productData.title || '', // Updated to use string directly
+        title: typeof productData.title === 'string' ? productData.title : productData.title?.ar || '',
         slug: productData.slug || '',
-        category: productData.category || '',
+        category: productData.category?.toString() || '',
         price: productData.price || '',
         product_type: productData.product_type || '',
         main_image: productData.main_image || '',
@@ -74,7 +74,7 @@ export default function EditProductPage() {
 
   const loadCategories = async () => {
     try {
-      const response = await ProductService.getCategories({ is_active: true });
+      const response = await CategoryService.getCategories({ is_active: true });
       setCategories(response?.results || []);
     } catch (err) {
       console.error('Error loading categories:', err);
@@ -100,7 +100,7 @@ export default function EditProductPage() {
     
     try {
       setSaving(true);
-      await ProductService.updateProduct(productId, formData);
+      await ProductService.updateProduct(productId, formData as any);
       router.push(`/admin/products/${productId}`);
     } catch (err) {
       alert('فشل في حفظ التغييرات');
@@ -133,7 +133,10 @@ export default function EditProductPage() {
   };
 
   const getCategoryDisplayName = (category: Category) => {
-    return category.name || 'بدون اسم';
+    if (typeof category.name === 'string') {
+      return category.name;
+    }
+    return category.name?.ar || category.name?.en || 'بدون اسم';
   };
 
   if (loading) {

@@ -52,7 +52,6 @@ export default function AdminSidebar() {
     { href: '/admin/customers', icon: 'ri-user-fill', label: 'إدارة العملاء' },
     { href: '/admin/reviews', icon: 'ri-star-fill', label: 'إدارة المراجعات' },
     { href: '/admin/marketing', icon: 'ri-megaphone-fill', label: 'إدارة التسويق' },
-    { href: '/admin/content', icon: 'ri-file-text-fill', label: 'إدارة المحتوى' },
     { href: '/admin/settings', icon: 'ri-settings-fill', label: 'الإعدادات' },
   ];
 

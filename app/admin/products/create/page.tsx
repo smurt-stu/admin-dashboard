@@ -3,18 +3,73 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ProductService, Category } from '../../../../lib/productService';
+import { ProductService, CategoryService, Category } from '../../../../lib/products';
+import { createProductData, validateMultilingualData, convertFormDataToAPI } from '../../../../lib/multilingualUtils';
+import ProductTabs from './components/ProductTabs';
+import BasicInfoTab from './components/BasicInfoTab';
+import DescriptionTab from './components/DescriptionTab';
+import PricingTab from './components/PricingTab';
+import MediaTab from './components/MediaTab';
+import MarketingTab from './components/MarketingTab';
+import Sidebar from './components/Sidebar';
 
 interface ProductFormData {
-  title: string; // Changed from { ar: string; en: string } to string
+  title: string;
+  title_en?: string;
+  subtitle?: string;
+  subtitle_en?: string;
+  description?: string;
+  description_en?: string;
+  short_description?: string;
+  short_description_en?: string;
   slug: string;
   category: string;
-  price: string;
   product_type: string;
+  sku?: string;
+  barcode?: string;
+  author?: string;
+  isbn?: string;
+  language?: string;
+  pages_count?: number;
+  publication_date?: string;
+  brand?: string;
+  model_number?: string;
+  price: string;
+  compare_price?: string;
+  cost_price?: string;
+  discount_percentage?: number;
+  specifications?: {
+    ar: string;
+    en: string;
+  };
+  detailed_specifications?: any[];
+  cover_image?: string;
+  digital_file?: string;
+  sample_file?: string;
   main_image: string;
+  stock_quantity?: number;
+  min_stock_alert?: number;
+  max_order_quantity?: number;
+  track_stock?: boolean;
+  requires_shipping?: boolean;
+  weight?: string;
+  dimensions?: any;
+  warranty_period?: number;
+  warranty_type?: string;
+  condition?: string;
   in_stock: boolean;
   is_featured: boolean;
   is_bestseller: boolean;
+  is_new_arrival?: boolean;
+  is_on_sale?: boolean;
+  launch_date?: string;
+  tags?: string;
+  meta_title?: string;
+  meta_title_en?: string;
+  meta_description?: string;
+  meta_description_en?: string;
+  keywords?: string;
+  keywords_en?: string;
 }
 
 export default function CreateProductPage() {
@@ -24,17 +79,85 @@ export default function CreateProductPage() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const productTypes = [
+    {
+      value: 'physical',
+      label: 'مادي (Physical)',
+      description: 'المنتجات الملموسة مثل الإلكترونيات والملابس'
+    },
+    {
+      value: 'digital',
+      label: 'رقمي (Digital)',
+      description: 'الملفات الرقمية مثل الكتب الإلكترونية والفيديوهات'
+    },
+    {
+      value: 'service',
+      label: 'خدمة (Service)',
+      description: 'الخدمات مثل الاستشارات والدورات التدريبية'
+    },
+    {
+      value: 'subscription',
+      label: 'اشتراك (Subscription)',
+      description: 'الاشتراكات الدورية مثل العضويات'
+    },
+    {
+      value: 'bundle',
+      label: 'حزمة (Bundle)',
+      description: 'مجموعات من المنتجات المباعة معاً'
+    }
+  ];
   
   const [formData, setFormData] = useState<ProductFormData>({
-    title: '', // Changed from { ar: '', en: '' } to ''
+    title: '',
+    subtitle: '',
+    description: '',
+    short_description: '',
     slug: '',
     category: '',
-    price: '',
-    product_type: '',
+    product_type: 'physical',
+    sku: '',
+    barcode: '',
+    author: '',
+    isbn: '',
+    language: '',
+    pages_count: undefined,
+    publication_date: '',
+    brand: '',
+    model_number: '',
+    price: '0.00',
+    compare_price: '',
+    cost_price: '',
+    discount_percentage: 0,
+    specifications: {
+      ar: '',
+      en: ''
+    },
+    detailed_specifications: [],
+    cover_image: '',
+    digital_file: '',
+    sample_file: '',
     main_image: '',
+    stock_quantity: 0,
+    min_stock_alert: 5,
+    max_order_quantity: 10,
+    track_stock: true,
+    requires_shipping: true,
+    weight: '',
+    dimensions: {},
+    warranty_period: 12,
+    warranty_type: '',
+    condition: 'new',
     in_stock: true,
     is_featured: false,
     is_bestseller: false,
+    is_new_arrival: false,
+    is_on_sale: false,
+    launch_date: '',
+    tags: '',
+    meta_title: '',
+    meta_description: '',
+    keywords: ''
   });
 
   useEffect(() => {
@@ -44,7 +167,7 @@ export default function CreateProductPage() {
   const loadCategories = async () => {
     try {
       setLoading(true);
-      const response = await ProductService.getCategories({ is_active: true });
+      const response = await CategoryService.getCategories({ is_active: true });
       setCategories(response?.results || []);
     } catch (err) {
       setError('فشل في تحميل التصنيفات');
@@ -54,63 +177,36 @@ export default function CreateProductPage() {
     }
   };
 
-  const handleInputChange = (field: string, value: any) => {
-    if (field === 'title') {
-      setFormData(prev => ({
-        ...prev,
-        title: value
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [field]: value
-      }));
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     
     try {
       setSaving(true);
-      const response = await ProductService.createProduct(formData);
+      setError(null);
+      
+      // Create product data according to API guide
+      const productData = createProductData(formData);
+      
+      // Validate multilingual data
+      const validationErrors = validateMultilingualData(productData);
+      if (validationErrors.length > 0) {
+        setError(`أخطاء في البيانات:\n${validationErrors.join('\n')}`);
+        return;
+      }
+      
+      const response = await ProductService.createProduct(productData as any);
       if (response?.id) {
         router.push(`/admin/products/${response.id}`);
       } else {
         router.push('/admin/products');
       }
-    } catch (err) {
-      alert('فشل في إنشاء المنتج');
+    } catch (err: any) {
+      const errorMessage = err.message || 'حدث خطأ غير متوقع';
+      setError(`فشل في إنشاء المنتج: ${errorMessage}`);
       console.error('Error creating product:', err);
     } finally {
       setSaving(false);
     }
-  };
-
-  const generateSlug = (title: string) => {
-    return title
-      .toLowerCase()
-      .replace(/[^\w\s-]/g, '')
-      .replace(/[\s_-]+/g, '-')
-      .replace(/^-+|-+$/g, '');
-  };
-
-  const handleTitleChange = (lang: 'ar' | 'en', value: string) => {
-    // Since title is now a single string, we'll use the Arabic value as the main title
-    if (lang === 'ar') {
-      handleInputChange('title', value);
-    }
-    // For English, we could store it separately if needed, but for now we'll use Arabic as primary
-    
-    // Generate slug from Arabic title if it exists
-    if (lang === 'ar' && value) {
-      const slug = generateSlug(value);
-      handleInputChange('slug', slug);
-    }
-  };
-
-  const getCategoryDisplayName = (category: Category) => {
-    return category.name || 'بدون اسم';
   };
 
   if (loading) {
@@ -124,7 +220,7 @@ export default function CreateProductPage() {
     );
   }
 
-  if (error) {
+  if (error && !formData.title) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
@@ -177,258 +273,64 @@ export default function CreateProductPage() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Form */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Basic Information */}
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">المعلومات الأساسية</h3>
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      الاسم بالعربية *
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.title}
-                      onChange={(e) => handleTitleChange('ar', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="أدخل اسم المنتج بالعربية"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      الاسم بالإنجليزية
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.title}
-                      onChange={(e) => handleTitleChange('en', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Enter product name in English"
-                    />
-                  </div>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    الرابط المختصر *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.slug}
-                    onChange={(e) => handleInputChange('slug', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="product-slug"
-                    required
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    سيتم استخدام هذا الرابط في عنوان URL للمنتج
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      التصنيف *
-                    </label>
-                    <select
-                      value={formData.category}
-                      onChange={(e) => handleInputChange('category', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      required
-                    >
-                      <option value="">اختر التصنيف</option>
-                      {categories.map(category => (
-                        <option key={category.id} value={category.id}>
-                          {getCategoryDisplayName(category)}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      نوع المنتج
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.product_type}
-                      onChange={(e) => handleInputChange('product_type', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="مثال: إلكترونيات، ملابس، إكسسوارات"
-                    />
-                  </div>
-                </div>
-              </div>
+      {/* Error Display */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <i className="ri-error-warning-line text-red-400"></i>
             </div>
-
-            {/* Pricing */}
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">التسعير</h3>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  السعر *
-                </label>
-                <div className="relative">
-                  <input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={formData.price}
-                    onChange={(e) => handleInputChange('price', e.target.value)}
-                    className="w-full px-3 py-2 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="0.00"
-                    required
-                  />
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <span className="text-gray-500 text-sm">د.ك</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Image */}
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">صورة المنتج</h3>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  رابط الصورة
-                </label>
-                <input
-                  type="url"
-                  value={formData.main_image}
-                  onChange={(e) => handleInputChange('main_image', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="https://example.com/image.jpg"
-                />
-                {formData.main_image && (
-                  <div className="mt-3">
-                    <img
-                      src={formData.main_image}
-                      alt="Preview"
-                      className="w-32 h-32 object-cover rounded-lg border border-gray-200"
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Status & Features */}
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">الحالة والمميزات</h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={formData.in_stock}
-                      onChange={(e) => handleInputChange('in_stock', e.target.checked)}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="mr-2 text-sm font-medium text-gray-700">متوفر في المخزون</span>
-                  </label>
-                </div>
-                
-                <div>
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={formData.is_featured}
-                      onChange={(e) => handleInputChange('is_featured', e.target.checked)}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="mr-2 text-sm font-medium text-gray-700">منتج مميز</span>
-                  </label>
-                </div>
-                
-                <div>
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={formData.is_bestseller}
-                      onChange={(e) => handleInputChange('is_bestseller', e.target.checked)}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="mr-2 text-sm font-medium text-gray-700">منتج مبيعات عالية</span>
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            {/* Actions */}
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">الإجراءات</h3>
-              <div className="space-y-3">
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center space-x-2 rtl:space-x-reverse"
-                >
-                  <i className="ri-add-line"></i>
-                  <span>{saving ? 'جاري الإنشاء...' : 'إنشاء المنتج'}</span>
-                </button>
-                
-                <Link
-                  href="/admin/products"
-                  className="w-full bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 flex items-center justify-center space-x-2 rtl:space-x-reverse"
-                >
-                  <i className="ri-close-line"></i>
-                  <span>إلغاء</span>
-                </Link>
-              </div>
-            </div>
-
-            {/* Preview */}
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">معاينة سريعة</h3>
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">الاسم</label>
-                  <p className="text-sm text-gray-900">
-                    {formData.title || 'غير محدد'}
-                  </p>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">السعر</label>
-                  <p className="text-sm font-semibold text-blue-600">
-                    {formData.price ? `${formData.price} د.ك` : 'غير محدد'}
-                  </p>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">الحالة</label>
-                  <div className="flex space-x-2 rtl:space-x-reverse">
-                    <span className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${
-                      formData.in_stock 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {formData.in_stock ? 'متوفر' : 'نفد المخزون'}
-                    </span>
-                    {formData.is_featured && (
-                      <span className="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
-                        مميز
-                      </span>
-                    )}
-                    {formData.is_bestseller && (
-                      <span className="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">
-                        مبيعات عالية
-                      </span>
-                    )}
-                  </div>
-                </div>
+            <div className="mr-3">
+              <h3 className="text-sm font-medium text-red-800">خطأ في إنشاء المنتج</h3>
+              <div className="mt-2 text-sm text-red-700 whitespace-pre-line">
+                {error}
               </div>
             </div>
           </div>
         </div>
-      </form>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Main Form */}
+        <div className="lg:col-span-2">
+          <ProductTabs tabs={['المعلومات الأساسية', 'الوصف والمواصفات', 'التسعير والمخزون', 'الصور والملفات', 'التسويق وSEO']}>
+            <BasicInfoTab 
+              formData={formData} 
+              setFormData={setFormData} 
+              categories={categories}
+              productTypes={productTypes}
+            />
+            <DescriptionTab 
+              formData={formData} 
+              setFormData={setFormData}
+              productType={formData.product_type}
+            />
+            <PricingTab 
+              formData={formData} 
+              setFormData={setFormData}
+              productType={formData.product_type}
+            />
+            <MediaTab 
+              formData={formData} 
+              setFormData={setFormData}
+              productType={formData.product_type}
+            />
+            <MarketingTab 
+              formData={formData} 
+              setFormData={setFormData}
+            />
+          </ProductTabs>
+        </div>
+
+        {/* Sidebar */}
+        <div>
+          <Sidebar 
+            formData={formData}
+            saving={saving}
+            onSubmit={handleSubmit}
+          />
+        </div>
+      </div>
     </div>
   );
 } 

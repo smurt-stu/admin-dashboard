@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ProductService, Product, Category, PaginatedResponse } from '../../../lib/productService';
+import { ProductService, CategoryService, Product, Category, PaginatedResponse } from '../../../lib/products';
 
 interface ProductFilters {
   search: string;
@@ -70,7 +70,7 @@ export default function ProductsPage() {
 
   const loadCategories = async () => {
     try {
-      const response = await ProductService.getCategories({ is_active: true });
+      const response = await CategoryService.getCategories({ is_active: true });
       setCategories(response?.results || []);
     } catch (err) {
       console.error('Error loading categories:', err);
@@ -153,16 +153,25 @@ export default function ProductsPage() {
     }
   };
 
-  const getProductTitle = (title: string) => {
-    return title || 'بدون عنوان';
+  const getProductTitle = (title: any) => {
+    if (typeof title === 'string') {
+      return title || 'بدون عنوان';
+    }
+    return title?.ar || title?.en || 'بدون عنوان';
   };
 
-  const getCategoryName = (categoryName: string) => {
-    return categoryName || 'فئة عامة';
+  const getCategoryName = (categoryName: any) => {
+    if (typeof categoryName === 'string') {
+      return categoryName || 'فئة عامة';
+    }
+    return categoryName?.ar || categoryName?.en || 'فئة عامة';
   };
 
   const getCategoryDisplayName = (category: Category) => {
-    return category.name || 'بدون اسم';
+    if (typeof category.name === 'string') {
+      return category.name;
+    }
+    return category.name?.ar || category.name?.en || 'بدون اسم';
   };
 
   const totalPages = Math.ceil(totalCount / 20);
@@ -531,8 +540,8 @@ function TableView({
   onSelectProduct: (id: string) => void;
   onSelectAll: () => void;
   onDeleteProduct: (id: string) => void;
-  getProductTitle: (title: string) => string;
-  getCategoryName: (categoryName: string) => string;
+  getProductTitle: (title: any) => string;
+  getCategoryName: (categoryName: any) => string;
   formatPrice: (price: string) => string;
   getStockStatus: (inStock: boolean) => { color: string; text: string };
 }) {
@@ -694,8 +703,8 @@ function CardsView({
   selectedProducts: string[];
   onSelectProduct: (id: string) => void;
   onDeleteProduct: (id: string) => void;
-  getProductTitle: (title: string) => string;
-  getCategoryName: (categoryName: string) => string;
+  getProductTitle: (title: any) => string;
+  getCategoryName: (categoryName: any) => string;
   formatPrice: (price: string) => string;
   getStockStatus: (inStock: boolean) => { color: string; text: string };
 }) {
