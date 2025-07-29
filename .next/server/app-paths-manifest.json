@@ -1,22 +1,5 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
   "/page": "app/page.js",
-  "/admin/customers/[id]/edit/page": "app/admin/customers/[id]/edit/page.js",
-  "/admin/customers/page": "app/admin/customers/page.js",
-  "/admin/customers/[id]/page": "app/admin/customers/[id]/page.js",
-  "/admin/login/page": "app/admin/login/page.js",
-  "/admin/marketing/analytics/page": "app/admin/marketing/analytics/page.js",
-  "/admin/marketing/coupons/create/page": "app/admin/marketing/coupons/create/page.js",
-  "/admin/marketing/coupons/page": "app/admin/marketing/coupons/page.js",
-  "/admin/marketing/page": "app/admin/marketing/page.js",
-  "/admin/marketing/promotions/create/page": "app/admin/marketing/promotions/create/page.js",
-  "/admin/marketing/promotions/page": "app/admin/marketing/promotions/page.js",
-  "/admin/page": "app/admin/page.js",
-  "/admin/products/[id]/edit/page": "app/admin/products/[id]/edit/page.js",
-  "/admin/products/[id]/page": "app/admin/products/[id]/page.js",
-  "/admin/reviews/comments/page": "app/admin/reviews/comments/page.js",
-  "/admin/products/create/page": "app/admin/products/create/page.js",
-  "/admin/products/page": "app/admin/products/page.js",
-  "/admin/reviews/page": "app/admin/reviews/page.js",
-  "/admin/reviews/statistics/page": "app/admin/reviews/statistics/page.js"
+  "/_not-found/page": "app/_not-found/page.js",
+  "/admin/login/page": "app/admin/login/page.js"
 }
