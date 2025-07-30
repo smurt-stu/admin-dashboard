@@ -33,6 +33,8 @@ export class ProductService {
   }
 
   static async createProduct(data: Partial<Product>): Promise<Product> {
+    console.log('Sending product data:', data);
+    
     const response = await fetch(
       `${BASE_URL}/store/products/products/`,
       {
@@ -41,6 +43,13 @@ export class ProductService {
         body: JSON.stringify(data)
       }
     );
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('API Error Response:', errorText);
+      throw new Error(`فشل في إنشاء المنتج: ${response.status} - ${errorText}`);
+    }
+    
     return handleApiError(response);
   }
 

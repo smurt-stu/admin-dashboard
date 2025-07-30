@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ProductService, CategoryService, Category } from '../../../../lib/products';
+import { ProductService, CategoryService, ProductTypeService, ImageService } from '../../../../lib/products';
+import { Category, ProductType } from '../../../../lib/products/types';
 import { createProductData, validateMultilingualData, convertFormDataToAPI } from '../../../../lib/multilingualUtils';
 import ProductTabs from './components/ProductTabs';
 import BasicInfoTab from './components/BasicInfoTab';
@@ -11,6 +12,8 @@ import DescriptionTab from './components/DescriptionTab';
 import PricingTab from './components/PricingTab';
 import MediaTab from './components/MediaTab';
 import MarketingTab from './components/MarketingTab';
+import DynamicFieldsTab from './components/DynamicFieldsTab';
+import VariantsTab from './components/VariantsTab';
 import Sidebar from './components/Sidebar';
 
 interface ProductFormData {
@@ -70,43 +73,23 @@ interface ProductFormData {
   meta_description_en?: string;
   keywords?: string;
   keywords_en?: string;
+  custom_fields?: Record<string, any>;
+  custom_fields_data?: Record<string, any>;
+  // إضافة حقل للصورة المرفوعة
+  main_image_file?: File;
 }
 
 export default function CreateProductPage() {
   const router = useRouter();
   
   const [categories, setCategories] = useState<Category[]>([]);
+  const [productTypes, setProductTypes] = useState<ProductType[]>([]);
+  const [selectedProductType, setSelectedProductType] = useState<ProductType | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const productTypes = [
-    {
-      value: 'physical',
-      label: 'مادي (Physical)',
-      description: 'المنتجات الملموسة مثل الإلكترونيات والملابس'
-    },
-    {
-      value: 'digital',
-      label: 'رقمي (Digital)',
-      description: 'الملفات الرقمية مثل الكتب الإلكترونية والفيديوهات'
-    },
-    {
-      value: 'service',
-      label: 'خدمة (Service)',
-      description: 'الخدمات مثل الاستشارات والدورات التدريبية'
-    },
-    {
-      value: 'subscription',
-      label: 'اشتراك (Subscription)',
-      description: 'الاشتراكات الدورية مثل العضويات'
-    },
-    {
-      value: 'bundle',
-      label: 'حزمة (Bundle)',
-      description: 'مجموعات من المنتجات المباعة معاً'
-    }
-  ];
+  // سيتم تحميل أنواع المنتجات من API
   
   const [formData, setFormData] = useState<ProductFormData>({
     title: '',
@@ -157,11 +140,14 @@ export default function CreateProductPage() {
     tags: '',
     meta_title: '',
     meta_description: '',
-    keywords: ''
+    keywords: '',
+    custom_fields: {},
+    custom_fields_data: {}
   });
 
   useEffect(() => {
     loadCategories();
+    loadProductTypes();
   }, []);
 
   const loadCategories = async () => {
@@ -177,6 +163,54 @@ export default function CreateProductPage() {
     }
   };
 
+  const loadProductTypes = async () => {
+    try {
+      const response = await ProductTypeService.getActiveProductTypes();
+      setProductTypes(response);
+    } catch (err) {
+      console.error('Error loading product types:', err);
+    }
+  };
+
+  const handleProductTypeChange = async (productTypeId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      product_type: productTypeId
+    }));
+    
+    // تحديث نوع المنتج المحدد
+    const selectedType = productTypes.find(type => type.id === productTypeId);
+    setSelectedProductType(selectedType || null);
+    
+    // جلب تفاصيل نوع المنتج الكاملة من الـ API
+    if (productTypeId) {
+      try {
+        console.log('Loading detailed product type info for:', productTypeId);
+        const detailedProductType = await ProductTypeService.getProductType(productTypeId);
+        console.log('Detailed product type:', detailedProductType);
+        setSelectedProductType(detailedProductType);
+        
+        // إظهار رسالة تأكيد للمستخدم
+        const displayName = typeof detailedProductType.display_name === 'string' 
+          ? detailedProductType.display_name 
+          : detailedProductType.display_name?.ar || detailedProductType.display_name?.en || detailedProductType.name;
+        
+        console.log(`تم اختيار نوع المنتج: ${displayName}`);
+        
+        // إذا كان نوع المنتج يحتوي على حقول مخصصة، إظهار تلميح للمستخدم
+        if (detailedProductType.settings?.custom_fields && detailedProductType.settings.custom_fields.length > 0) {
+          console.log(`هذا النوع يحتوي على ${detailedProductType.settings.custom_fields.length} حقل مخصص`);
+        }
+      } catch (error) {
+        console.error('Error loading detailed product type:', error);
+        // في حالة فشل الطلب، استخدم البيانات المحلية
+        if (selectedType) {
+          setSelectedProductType(selectedType);
+        }
+      }
+    }
+  };
+
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     
@@ -184,8 +218,49 @@ export default function CreateProductPage() {
       setSaving(true);
       setError(null);
       
+      // معالجة البيانات
+      
+      // التحقق من صحة الحقول المخصصة إذا كانت موجودة
+      if (formData.custom_fields_data && Object.keys(formData.custom_fields_data).length > 0) {
+        const customFieldErrors: string[] = [];
+        
+        Object.entries(formData.custom_fields_data).forEach(([fieldName, fieldValue]) => {
+          // التحقق من الحقول المطلوبة
+          if (typeof fieldValue === 'object' && fieldValue !== null) {
+            const fieldObj = fieldValue as any;
+            if (fieldObj.required && (!fieldObj.value || fieldObj.value === '')) {
+              customFieldErrors.push(`الحقل "${fieldName}" مطلوب`);
+            }
+            
+            // التحقق من صحة البريد الإلكتروني
+            if (fieldObj.type === 'email' && fieldObj.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fieldObj.value)) {
+              customFieldErrors.push(`الحقل "${fieldName}" يجب أن يكون بريد إلكتروني صحيح`);
+            }
+            
+            // التحقق من صحة الرابط
+            if (fieldObj.type === 'url' && fieldObj.value && !/^https?:\/\/.+/.test(fieldObj.value)) {
+              customFieldErrors.push(`الحقل "${fieldName}" يجب أن يكون رابط صحيح`);
+            }
+            
+            // التحقق من صحة الرقم
+            if (fieldObj.type === 'number' && fieldObj.value && isNaN(Number(fieldObj.value))) {
+              customFieldErrors.push(`الحقل "${fieldName}" يجب أن يكون رقماً`);
+            }
+          }
+        });
+        
+        if (customFieldErrors.length > 0) {
+          setError(`أخطاء في الحقول المخصصة:\n${customFieldErrors.join('\n')}`);
+          return;
+        }
+      }
+      
       // Create product data according to API guide
       const productData = createProductData(formData);
+      
+      // طباعة البيانات للتصحيح
+      console.log('Form data before processing:', formData);
+      console.log('Product data after processing:', productData);
       
       // Validate multilingual data
       const validationErrors = validateMultilingualData(productData);
@@ -194,11 +269,40 @@ export default function CreateProductPage() {
         return;
       }
       
-      const response = await ProductService.createProduct(productData as any);
-      if (response?.id) {
-        router.push(`/admin/products/${response.id}`);
+      // إذا كان هناك صورة مرفوعة، استخدم الطريقة الجديدة
+      if (formData.main_image_file) {
+        const result = await ImageService.uploadImageWithProduct(productData as any, formData.main_image_file);
+        if (result.product?.id) {
+          // تحديث formData بـ id المنتج للسماح برفع الصور الإضافية
+          setFormData(prev => ({
+            ...prev,
+            id: result.product.id
+          }));
+          
+          // انتظار قليلاً ثم الانتقال إلى صفحة التعديل
+          setTimeout(() => {
+            router.push(`/admin/products/${result.product.id}`);
+          }, 1000);
+        } else {
+          router.push('/admin/products');
+        }
       } else {
-        router.push('/admin/products');
+        // الطريقة القديمة بدون صورة
+        const response = await ProductService.createProduct(productData as any);
+        if (response?.id) {
+          // تحديث formData بـ id المنتج للسماح برفع الصور
+          setFormData(prev => ({
+            ...prev,
+            id: response.id
+          }));
+          
+          // انتظار قليلاً ثم الانتقال إلى صفحة التعديل
+          setTimeout(() => {
+            router.push(`/admin/products/${response.id}`);
+          }, 1000);
+        } else {
+          router.push('/admin/products');
+        }
       }
     } catch (err: any) {
       const errorMessage = err.message || 'حدث خطأ غير متوقع';
@@ -293,12 +397,18 @@ export default function CreateProductPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Form */}
         <div className="lg:col-span-2">
-          <ProductTabs tabs={['المعلومات الأساسية', 'الوصف والمواصفات', 'التسعير والمخزون', 'الصور والملفات', 'التسويق وSEO']}>
+          <ProductTabs tabs={['المعلومات الأساسية', 'الحقول المخصصة', 'الوصف والمواصفات', 'التسعير والمخزون', 'المتغيرات', 'الصور والملفات', 'التسويق وSEO']}>
             <BasicInfoTab 
               formData={formData} 
               setFormData={setFormData} 
               categories={categories}
               productTypes={productTypes}
+              onProductTypeChange={handleProductTypeChange}
+            />
+            <DynamicFieldsTab 
+              formData={formData} 
+              setFormData={setFormData}
+              selectedProductType={selectedProductType}
             />
             <DescriptionTab 
               formData={formData} 
@@ -309,6 +419,11 @@ export default function CreateProductPage() {
               formData={formData} 
               setFormData={setFormData}
               productType={formData.product_type}
+            />
+            <VariantsTab 
+              formData={formData} 
+              setFormData={setFormData}
+              selectedProductType={selectedProductType}
             />
             <MediaTab 
               formData={formData} 

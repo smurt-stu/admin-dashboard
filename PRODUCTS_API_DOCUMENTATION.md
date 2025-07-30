@@ -1496,108 +1496,326 @@ GET /api/products/{id}/
 {
     "success": true,
     "data": {
-        "id": "uuid-here",
-        "title": {
-            "ar": "قميص قطني كلاسيك",
-            "en": "Classic Cotton Shirt"
-        },
-        "slug": "classic-cotton-shirt",
-        "description": {
-            "ar": "قميص قطني مريح وأنيق",
-            "en": "Comfortable and elegant cotton shirt"
-        },
-        "short_description": {
-            "ar": "قميص قطني 100%",
-            "en": "100% cotton shirt"
-        },
-        "sku": "SHIRT-001",
-        "brand": "Fashion Brand",
-        "price": "89.99",
-        "compare_price": "120.00",
-        "cost_price": "45.00",
-        "discount_percentage": "25.01",
-        "stock_quantity": 150,
-        "min_stock_alert": 10,
-        "weight": "0.25",
-        "dimensions": {
-            "length": "70",
-            "width": "50",
-            "height": "2"
-        },
-        "digital_file": null,
-        "sample_file": null,
-        "main_image": "products/shirt-main.jpg",
+        "id": "c83d1ee9-6501-433e-967e-ddaa65e95bce",
+        "title": "حذاء رياضي مريح",
+        "slug": "comfortable-sports-shoes",
+        "short_description": "حذاء رياضي مريح",
+        "category_name": "ملابس رجالية",
+        "product_type_name": "أحذية",
+        "brand": "SportMax",
+        "price": "149.99",
+        "effective_price": 149.99,
+        "compare_price": "199.00",
+        "savings_amount": 49.01,
+        "discount_percentage": "0.00",
         "is_featured": true,
         "is_on_sale": true,
-        "tags": "ملابس,أزياء,عصرية",
-        "meta_title": {
-            "ar": "قميص قطني كلاسيك - متجر الأزياء",
-            "en": "Classic Cotton Shirt - Fashion Store"
-        },
-        "meta_description": {
-            "ar": "قميص قطني مريح وأنيق",
-            "en": "Comfortable and elegant cotton shirt"
-        },
-        "settings": {
-            "allow_reviews": true,
-            "allow_ratings": true,
-            "show_stock": true
-        },
+        "is_in_stock": true,
+        "main_image": "https://pub-e2db5a4b3e434dfba3c99b85e98a2a2d.r2.dev/media/products/fashion/comfortable-sports-shoes_main.jpg",
+        "main_image_url": "https://pub-e2db5a4b3e434dfba3c99b85e98a2a2d.r2.dev/media/products/fashion/comfortable-sports-shoes_main.jpg",
+        "created_at": "2025-07-29T14:14:10.691117Z",
+        "is_active": true,
+        "description": "حذاء رياضي مريح مناسب للجري والرياضة",
         "category": {
-            "id": "category-uuid",
-            "name": {
-                "ar": "قمصان",
-                "en": "Shirts"
-            },
-            "slug": "shirts"
+            "id": "fa27eaa1-3c7b-42b6-89fc-559363673157",
+            "name": "ملابس رجالية",
+            "slug": "mlbs-rjly-b3e69913",
+            "icon": "fas fa-male",
+            "level": 0,
+            "products_count": 4,
+            "display_order": 6,
+            "is_active": true
         },
         "product_type": {
-            "id": "type-uuid",
-            "name": "clothing",
-            "display_name": {
-                "ar": "ملابس",
-                "en": "Clothing"
+            "id": "e2cfd623-f546-4f27-98ea-c9f548f629d8",
+            "name": "shoes",
+            "display_name": "أحذية",
+            "slug": "shoes",
+            "description": "الأحذية والجزم",
+            "icon": "fas fa-shoe-prints",
+            "color": "#795548",
+            "is_digital": false,
+            "requires_shipping": true,
+            "track_stock": true,
+            "has_variants": true,
+            "template_name": "product_shoes",
+            "field_schema": {
+                "basic_fields": [
+                    "title",
+                    "description",
+                    "price",
+                    "weight",
+                    "dimensions",
+                    "stock_quantity",
+                    "min_stock_alert"
+                ],
+                "custom_fields": []
             },
             "settings": {
-                "size_options": ["XS", "S", "M", "L", "XL", "XXL"],
-                "color_options": ["أحمر", "أزرق", "أخضر", "أصفر", "أسود", "أبيض", "رمادي", "بني"],
-                "material_types": ["قطن", "بوليستر", "حرير", "صوف", "دينيم"]
-            }
+                "shoe_types": [
+                    "رياضي",
+                    "رسمي",
+                    "كاجوال",
+                    "صيفي",
+                    "شتوي"
+                ],
+                "size_options": [
+                    "36",
+                    "37",
+                    "38",
+                    "39",
+                    "40",
+                    "41",
+                    "42",
+                    "43",
+                    "44",
+                    "45"
+                ],
+                "color_options": [
+                    "أحمر",
+                    "أزرق",
+                    "أخضر",
+                    "أصفر",
+                    "أسود",
+                    "أبيض",
+                    "رمادي",
+                    "بني"
+                ]
+            },
+            "display_order": 0,
+            "created_at": "2025-07-29T14:14:04.477265Z",
+            "updated_at": "2025-07-29T14:14:04.477286Z",
+            "is_active": true
         },
-        "variants": [
+        "sku": "SHO-8675DC57",
+        "cost_price": null,
+        "stock_quantity": 40,
+        "min_stock_alert": 5,
+        "weight": null,
+        "dimensions": {},
+        "digital_file": null,
+        "sample_file": null,
+        "tags": "أحذية,أنيقة,مريحة",
+        "tags_list": [
+            "أحذية",
+            "أنيقة",
+            "مريحة"
+        ],
+        "custom_fields": [
             {
-                "id": "variant-uuid",
-                "name": "أحمر - M",
-                "sku": "SHIRT-001-RED-M",
-                "options": {
-                    "color": "أحمر",
-                    "size": "M"
+                "id": "aa9cb0de-cfb0-4749-8d8f-bae921abb5aa",
+                "field_name": "النوع",
+                "label": "النوع",
+                "field_type": "text",
+                "field_value": {
+                    "ar": "رياضي",
+                    "en": "رياضي"
                 },
-                "price_modifier": "0.00",
-                "stock_quantity": 25,
-                "is_in_stock": true,
-                "image": "products/shirt-red-m.jpg"
+                "display_value": "{'ar': 'رياضي', 'en': 'رياضي'}",
+                "formatted_value": {
+                    "name": "النوع",
+                    "label": "النوع",
+                    "type": "text",
+                    "value": {
+                        "ar": "رياضي",
+                        "en": "رياضي"
+                    },
+                    "display_value": "{'ar': 'رياضي', 'en': 'رياضي'}",
+                    "is_required": false,
+                    "options": null
+                },
+                "display_order": 1,
+                "is_required": false,
+                "is_searchable": true,
+                "is_filterable": true,
+                "options": [],
+                "settings": {},
+                "is_active": true
+            },
+            {
+                "id": "d58f3d49-306e-47cd-ad1d-99fe2e7c6e43",
+                "field_name": "المادة",
+                "label": "المادة",
+                "field_type": "text",
+                "field_value": {
+                    "ar": "جلد طبيعي",
+                    "en": "جلد طبيعي"
+                },
+                "display_value": "{'ar': 'جلد طبيعي', 'en': 'جلد طبيعي'}",
+                "formatted_value": {
+                    "name": "المادة",
+                    "label": "المادة",
+                    "type": "text",
+                    "value": {
+                        "ar": "جلد طبيعي",
+                        "en": "جلد طبيعي"
+                    },
+                    "display_value": "{'ar': 'جلد طبيعي', 'en': 'جلد طبيعي'}",
+                    "is_required": false,
+                    "options": null
+                },
+                "display_order": 2,
+                "is_required": false,
+                "is_searchable": true,
+                "is_filterable": true,
+                "options": [],
+                "settings": {},
+                "is_active": true
+            },
+            {
+                "id": "d340923e-d66f-418a-ae8e-0703ee8e3856",
+                "field_name": "النعل",
+                "label": "النعل",
+                "field_type": "text",
+                "field_value": {
+                    "ar": "مطاطي",
+                    "en": "مطاطي"
+                },
+                "display_value": "{'ar': 'مطاطي', 'en': 'مطاطي'}",
+                "formatted_value": {
+                    "name": "النعل",
+                    "label": "النعل",
+                    "type": "text",
+                    "value": {
+                        "ar": "مطاطي",
+                        "en": "مطاطي"
+                    },
+                    "display_value": "{'ar': 'مطاطي', 'en': 'مطاطي'}",
+                    "is_required": false,
+                    "options": null
+                },
+                "display_order": 3,
+                "is_required": false,
+                "is_searchable": true,
+                "is_filterable": true,
+                "options": [],
+                "settings": {},
+                "is_active": true
+            },
+            {
+                "id": "510fc11d-dd63-4ff6-ae3f-dd7ecc3626d1",
+                "field_name": "الضمان",
+                "label": "الضمان",
+                "field_type": "text",
+                "field_value": {
+                    "ar": "1 سنة",
+                    "en": "1 سنة"
+                },
+                "display_value": "{'ar': '1 سنة', 'en': '1 سنة'}",
+                "display_value": "{'ar': '1 سنة', 'en': '1 سنة'}",
+                "formatted_value": {
+                    "name": "الضمان",
+                    "label": "الضمان",
+                    "type": "text",
+                    "value": {
+                        "ar": "1 سنة",
+                        "en": "1 سنة"
+                    },
+                    "display_value": "{'ar': '1 سنة', 'en': '1 سنة'}",
+                    "is_required": false,
+                    "options": null
+                },
+                "display_order": 4,
+                "is_required": false,
+                "is_searchable": true,
+                "is_filterable": true,
+                "options": [],
+                "settings": {},
+                "is_active": true
             }
         ],
         "images": [
             {
-                "id": "image-uuid",
-                "image": "products/shirt-main.jpg",
+                "id": "698b352c-16ed-427b-bfc8-62cdff7a93bf",
+                "image": "https://pub-e2db5a4b3e434dfba3c99b85e98a2a2d.r2.dev/media/products/fashion/comfortable-sports-shoes_main.jpg",
+                "image_url": "https://pub-e2db5a4b3e434dfba3c99b85e98a2a2d.r2.dev/media/products/fashion/comfortable-sports-shoes_main.jpg",
                 "image_type": "main",
-                "alt_text": {
-                    "ar": "صورة قميص قطني كلاسيك",
-                    "en": "Classic cotton shirt image"
-                },
-                "caption": {
-                    "ar": "قميص قطني كلاسيك",
-                    "en": "Classic cotton shirt"
-                },
+                "alt_text": "صورة حذاء رياضي مريح",
+                "caption": "صورة حذاء رياضي مريح",
+                "display_order": 1,
                 "is_primary": true,
-                "display_order": 1
+                "is_active": true
+            },
+            {
+                "id": "f49d9d6c-aa8e-4c9b-8f12-37f9ea4322fe",
+                "image": "https://pub-e2db5a4b3e434dfba3c99b85e98a2a2d.r2.dev/media/products/fashion/comfortable-sports-shoes_2.jpg",
+                "image_url": "https://pub-e2db5a4b3e434dfba3c99b85e98a2a2d.r2.dev/media/products/fashion/comfortable-sports-shoes_2.jpg",
+                "image_type": "gallery",
+                "alt_text": "صورة حذاء رياضي مريح 2",
+                "caption": "صورة حذاء رياضي مريح 2",
+                "display_order": 2,
+                "is_primary": false,
+                "is_active": true
+            },
+            {
+                "id": "f4c4c823-39be-4d1b-a3e4-f7ae15dbeed4",
+                "image": "https://pub-e2db5a4b3e434dfba3c99b85e98a2a2d.r2.dev/media/products/fashion/comfortable-sports-shoes_3.jpg",
+                "image_url": "https://pub-e2db5a4b3e434dfba3c99b85e98a2a2d.r2.dev/media/products/fashion/comfortable-sports-shoes_3.jpg",
+                "image_type": "gallery",
+                "alt_text": "صورة حذاء رياضي مريح 3",
+                "caption": "صورة حذاء رياضي مريح 3",
+                "display_order": 3,
+                "is_primary": false,
+                "is_active": true
             }
         ],
-        "fields": [
+        "variants": [
             {
+                "id": "1a47286c-1205-4077-814c-a794a85e1198",
+                "name": "أحمر - 36",
+                "sku": "SHO-8675DC57-VAR-B8636E",
+                "options": {
+                    "size": "36",
+                    "color": "أحمر"
+                },
+                "option_display": {
+                    "size": "36",
+                    "color": "أحمر"
+                },
+                "price_modifier": "-5.00",
+                "effective_price": 144.99,
+                "stock_quantity": 41,
+                "is_in_stock": true,
+                "image": null,
+                "display_order": 1,
+                "is_active": true
+            },
+            {
+                "id": "9f0b70e5-8e1b-4590-9b04-c4b15868a3f1",
+                "name": "أزرق - 36",
+                "sku": "SHO-8675DC57-VAR-769DFC",
+                "options": {
+                    "size": "36",
+                    "color": "أزرق"
+                },
+                "option_display": {
+                    "size": "36",
+                    "color": "أزرق"
+                },
+                "price_modifier": "-5.00",
+                "effective_price": 144.99,
+                "stock_quantity": 12,
+                "is_in_stock": true,
+                "image": null,
+                "display_order": 2,
+                "is_active": true
+            }
+        ],
+        "meta_title": {
+            "ar": "حذاء رياضي مريح",
+            "en": "Comfortable Sports Shoes"
+        },
+        "meta_description": {
+            "ar": "حذاء رياضي مريح",
+            "en": "Comfortable sports shoes"
+        },
+        "settings": {},
+        "updated_at": "2025-07-29T14:14:20.526285Z",
+        "is_digital": false,
+        "requires_shipping": true
+    }
+}
+```
                 "id": "field-uuid",
                 "field_name": "material",
                 "field_label": {
@@ -2139,6 +2357,742 @@ fetch(`/api/products/${productId}/stock/`, {
 ```
 
 ---
+
+## العناصر المطلوبة في عرض تفاصيل المنتج
+
+بناءً على استجابة API الفعلية، يجب أن يتضمن عرض تفاصيل المنتج العناصر التالية:
+
+### 📊 المعلومات الأساسية
+- **ID المنتج**: معرف فريد للمنتج
+- **العنوان**: عنوان المنتج باللغات المدعومة
+- **الوصف القصير**: وصف مختصر للمنتج
+- **الوصف الكامل**: وصف تفصيلي للمنتج
+- **SKU**: رمز المنتج الفريد
+- **الماركة**: ماركة المنتج
+
+### 💰 المعلومات المالية
+- **السعر الأساسي**: سعر المنتج الأساسي
+- **السعر الفعال**: السعر النهائي بعد الخصومات
+- **سعر المقارنة**: السعر الأصلي قبل الخصم
+- **مبلغ التوفير**: المبلغ المحفوظ من الخصم
+- **نسبة الخصم**: نسبة الخصم المطبقة
+
+### 📦 معلومات المخزون والشحن
+- **كمية المخزون**: الكمية المتوفرة
+- **تنبيه المخزون الأدنى**: الحد الأدنى للمخزون
+- **حالة المخزون**: متوفر/غير متوفر
+- **الوزن**: وزن المنتج
+- **الأبعاد**: أبعاد المنتج
+- **يتطلب شحن**: هل يحتاج شحن أم لا
+- **رقمي**: هل المنتج رقمي أم مادي
+
+### 🏷️ التصنيف والعلامات
+- **الفئة**: فئة المنتج مع التفاصيل الكاملة
+- **نوع المنتج**: نوع المنتج مع الإعدادات
+- **العلامات**: قائمة العلامات
+- **قائمة العلامات**: مصفوفة العلامات
+
+### 🖼️ الصور والوسائط
+- **الصورة الرئيسية**: رابط الصورة الرئيسية
+- **معرض الصور**: قائمة جميع صور المنتج
+- **الملف الرقمي**: للمنتجات الرقمية
+- **ملف العينة**: ملف تجريبي
+
+### ⚙️ الحقول المخصصة
+- **الحقول المخصصة**: قائمة الحقول المخصصة
+- **قيم الحقول**: القيم المدخلة لكل حقل
+- **إعدادات الحقول**: خصائص كل حقل
+
+### 🔄 المتغيرات
+- **قائمة المتغيرات**: جميع متغيرات المنتج
+- **خيارات المتغيرات**: الأحجام والألوان المتوفرة
+- **أسعار المتغيرات**: أسعار كل متغير
+- **مخزون المتغيرات**: مخزون كل متغير
+
+### 📈 الحالة والإعدادات
+- **مميز**: هل المنتج مميز
+- **في العرض**: هل المنتج في عرض خاص
+- **نشط**: حالة المنتج
+- **الإعدادات**: إعدادات خاصة بالمنتج
+
+### 🔍 تحسين محركات البحث
+- **عنوان الصفحة**: عنوان الصفحة للـ SEO
+- **وصف الصفحة**: وصف الصفحة للـ SEO
+
+### 📅 التواريخ
+- **تاريخ الإنشاء**: متى تم إنشاء المنتج
+- **تاريخ التحديث**: آخر تحديث للمنتج
+
+## مثال على عرض تفاصيل المنتج الكاملة
+
+```javascript
+// عرض تفاصيل المنتج الكاملة
+const productId = 'c83d1ee9-6501-433e-967e-ddaa65e95bce';
+
+fetch(`/api/products/${productId}/`)
+.then(response => response.json())
+.then(data => {
+    if (data.success) {
+        const product = data.data;
+        
+        // عرض المعلومات الأساسية
+        console.log(`العنوان: ${product.title}`);
+        console.log(`SKU: ${product.sku}`);
+        console.log(`الماركة: ${product.brand}`);
+        
+        // عرض المعلومات المالية
+        console.log(`السعر: ${product.price} ريال`);
+        console.log(`السعر الفعال: ${product.effective_price} ريال`);
+        console.log(`التوفير: ${product.savings_amount} ريال`);
+        
+        // عرض معلومات المخزون
+        console.log(`المخزون: ${product.stock_quantity} قطعة`);
+        console.log(`حالة المخزون: ${product.is_in_stock ? 'متوفر' : 'غير متوفر'}`);
+        
+        // عرض الفئة ونوع المنتج
+        console.log(`الفئة: ${product.category.name}`);
+        console.log(`نوع المنتج: ${product.product_type.display_name}`);
+        
+        // عرض العلامات
+        console.log(`العلامات: ${product.tags}`);
+        
+        // عرض الحقول المخصصة
+        product.custom_fields.forEach(field => {
+            console.log(`${field.label}: ${field.field_value.ar}`);
+        });
+        
+        // عرض المتغيرات
+        product.variants.forEach(variant => {
+            console.log(`${variant.name}: ${variant.effective_price} ريال (المخزون: ${variant.stock_quantity})`);
+        });
+        
+        // عرض الصور
+        product.images.forEach(image => {
+            console.log(`صورة ${image.display_order}: ${image.image_url}`);
+        });
+    }
+});
+```
+
+## تحسين واجهة المستخدم لعرض تفاصيل المنتج
+
+### 🎨 تصميم واجهة تفاصيل المنتج
+
+#### 1. القسم العلوي - المعلومات الأساسية
+```html
+<div class="product-header">
+    <div class="product-images">
+        <!-- معرض الصور الرئيسي -->
+        <div class="main-image">
+            <img src="{{ product.main_image_url }}" alt="{{ product.title }}">
+        </div>
+        <div class="image-gallery">
+            <!-- صور إضافية -->
+        </div>
+    </div>
+    
+    <div class="product-info">
+        <h1>{{ product.title }}</h1>
+        <div class="product-meta">
+            <span class="sku">SKU: {{ product.sku }}</span>
+            <span class="brand">الماركة: {{ product.brand }}</span>
+        </div>
+        
+        <!-- الأسعار -->
+        <div class="pricing">
+            <div class="current-price">{{ product.effective_price }} ريال</div>
+            {% if product.compare_price %}
+            <div class="compare-price">{{ product.compare_price }} ريال</div>
+            <div class="savings">توفير {{ product.savings_amount }} ريال</div>
+            {% endif %}
+        </div>
+        
+        <!-- حالة المخزون -->
+        <div class="stock-status">
+            {% if product.is_in_stock %}
+            <span class="in-stock">متوفر ({{ product.stock_quantity }} قطعة)</span>
+            {% else %}
+            <span class="out-of-stock">غير متوفر</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+```
+
+#### 2. قسم المتغيرات
+```html
+<div class="product-variants">
+    <h3>الخيارات المتوفرة</h3>
+    
+    <!-- اختيار الحجم -->
+    <div class="size-selector">
+        <label>الحجم:</label>
+        <div class="size-options">
+            {% for variant in product.variants %}
+            <button class="size-option" data-variant-id="{{ variant.id }}">
+                {{ variant.options.size }}
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- اختيار اللون -->
+    <div class="color-selector">
+        <label>اللون:</label>
+        <div class="color-options">
+            {% for variant in product.variants %}
+            <button class="color-option" data-color="{{ variant.options.color }}">
+                {{ variant.options.color }}
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- معلومات المتغير المحدد -->
+    <div class="selected-variant">
+        <div class="variant-price">{{ selected_variant.effective_price }} ريال</div>
+        <div class="variant-stock">المخزون: {{ selected_variant.stock_quantity }}</div>
+    </div>
+</div>
+```
+
+#### 3. قسم الحقول المخصصة
+```html
+<div class="custom-fields">
+    <h3>مواصفات المنتج</h3>
+    
+    {% for field in product.custom_fields %}
+    <div class="field-item">
+        <span class="field-label">{{ field.label }}:</span>
+        <span class="field-value">{{ field.field_value.ar }}</span>
+    </div>
+    {% endfor %}
+</div>
+```
+
+#### 4. قسم الوصف والتفاصيل
+```html
+<div class="product-description">
+    <h3>وصف المنتج</h3>
+    <div class="description-content">
+        {{ product.description }}
+    </div>
+    
+    <!-- العلامات -->
+    <div class="product-tags">
+        {% for tag in product.tags_list %}
+        <span class="tag">{{ tag }}</span>
+        {% endfor %}
+    </div>
+</div>
+```
+
+#### 5. قسم معلومات الشحن والتسليم
+```html
+<div class="shipping-info">
+    <h3>معلومات الشحن</h3>
+    
+    {% if product.requires_shipping %}
+    <div class="shipping-details">
+        <p>✅ يتطلب شحن</p>
+        {% if product.weight %}
+        <p>الوزن: {{ product.weight }} كجم</p>
+        {% endif %}
+        {% if product.dimensions %}
+        <p>الأبعاد: {{ product.dimensions.length }} × {{ product.dimensions.width }} × {{ product.dimensions.height }} سم</p>
+        {% endif %}
+    </div>
+    {% else %}
+    <div class="digital-product">
+        <p>📱 منتج رقمي - لا يتطلب شحن</p>
+    </div>
+    {% endif %}
+</div>
+```
+
+### 🎯 تحسينات إضافية
+
+#### 1. عرض الأسعار الديناميكي
+```javascript
+// تحديث السعر حسب المتغير المحدد
+function updatePrice(variantId) {
+    const variant = product.variants.find(v => v.id === variantId);
+    if (variant) {
+        document.querySelector('.current-price').textContent = 
+            `${variant.effective_price} ريال`;
+        
+        // تحديث معلومات المخزون
+        document.querySelector('.variant-stock').textContent = 
+            `المخزون: ${variant.stock_quantity}`;
+    }
+}
+```
+
+#### 2. معرض الصور التفاعلي
+```javascript
+// تبديل الصور في المعرض
+function switchImage(imageUrl) {
+    document.querySelector('.main-image img').src = imageUrl;
+}
+
+// إضافة تأثيرات التكبير
+function initImageZoom() {
+    const mainImage = document.querySelector('.main-image img');
+    mainImage.addEventListener('mouseenter', () => {
+        mainImage.style.transform = 'scale(1.1)';
+    });
+    
+    mainImage.addEventListener('mouseleave', () => {
+        mainImage.style.transform = 'scale(1)';
+    });
+}
+```
+
+#### 3. عرض الحقول المخصصة بشكل جميل
+```css
+.custom-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 2rem 0;
+}
+
+.field-item {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #007bff;
+}
+
+.field-label {
+    font-weight: bold;
+    color: #495057;
+}
+
+.field-value {
+    color: #212529;
+    margin-right: 0.5rem;
+}
+```
+
+#### 4. تحسين عرض المتغيرات
+```css
+.variant-selector {
+    margin: 1rem 0;
+}
+
+.size-options, .color-options {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.size-option, .color-option {
+    padding: 0.5rem 1rem;
+    border: 2px solid #dee2e6;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.size-option:hover, .color-option:hover {
+    border-color: #007bff;
+}
+
+.size-option.selected, .color-option.selected {
+    border-color: #007bff;
+    background: #007bff;
+    color: white;
+}
+```
+
+### 📱 تحسينات للأجهزة المحمولة
+
+```css
+/* تصميم متجاوب */
+@media (max-width: 768px) {
+    .product-header {
+        flex-direction: column;
+    }
+    
+    .product-images {
+        order: 1;
+    }
+    
+    .product-info {
+        order: 2;
+    }
+    
+    .size-options, .color-options {
+        justify-content: center;
+    }
+    
+    .custom-fields {
+        grid-template-columns: 1fr;
+    }
+}
+```
+
+### ⚡ تحسينات الأداء
+
+#### 1. تحميل الصور بشكل تدريجي
+```javascript
+// تحميل الصور بشكل تدريجي
+function lazyLoadImages() {
+    const images = document.querySelectorAll('img[data-src]');
+    
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                img.src = img.dataset.src;
+                img.removeAttribute('data-src');
+                observer.unobserve(img);
+            }
+        });
+    });
+    
+    images.forEach(img => imageObserver.observe(img));
+}
+```
+
+#### 2. تخزين مؤقت للبيانات
+```javascript
+// تخزين مؤقت لبيانات المنتج
+function cacheProductData(productId, data) {
+    localStorage.setItem(`product_${productId}`, JSON.stringify({
+        data: data,
+        timestamp: Date.now()
+    });
+}
+
+function getCachedProductData(productId) {
+    const cached = localStorage.getItem(`product_${productId}`);
+    if (cached) {
+        const { data, timestamp } = JSON.parse(cached);
+        // التحقق من صلاحية البيانات (24 ساعة)
+        if (Date.now() - timestamp < 24 * 60 * 60 * 1000) {
+            return data;
+        }
+    }
+    return null;
+}
+```
+
+## التعامل مع الأخطاء الشائعة في عرض تفاصيل المنتج
+
+### ❌ الأخطاء الشائعة وحلولها
+
+#### 1. خطأ: المنتج غير موجود
+```javascript
+// التعامل مع منتج غير موجود
+fetch(`/api/products/${productId}/`)
+.then(response => {
+    if (response.status === 404) {
+        throw new Error('المنتج غير موجود');
+    }
+    return response.json();
+})
+.then(data => {
+    if (data.success) {
+        displayProduct(data.data);
+    } else {
+        showError(data.error);
+    }
+})
+.catch(error => {
+    showError('حدث خطأ في تحميل المنتج');
+    console.error('Error:', error);
+});
+
+function showError(message) {
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-message';
+    errorDiv.innerHTML = `
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle"></i>
+            ${message}
+        </div>
+    `;
+    document.querySelector('.product-container').appendChild(errorDiv);
+}
+```
+
+#### 2. خطأ: الصور غير متوفرة
+```javascript
+// التعامل مع الصور المفقودة
+function handleImageError(img) {
+    img.onerror = function() {
+        this.src = '/images/placeholder.jpg';
+        this.alt = 'صورة غير متوفرة';
+    };
+}
+
+// تطبيق على جميع الصور
+document.querySelectorAll('.product-images img').forEach(img => {
+    handleImageError(img);
+});
+```
+
+#### 3. خطأ: المتغيرات غير متوفرة
+```javascript
+// التحقق من توفر المتغيرات
+function checkVariantsAvailability(product) {
+    if (!product.variants || product.variants.length === 0) {
+        document.querySelector('.product-variants').style.display = 'none';
+        return;
+    }
+    
+    // التحقق من توفر المخزون
+    const availableVariants = product.variants.filter(v => v.is_in_stock);
+    if (availableVariants.length === 0) {
+        showOutOfStockMessage();
+    }
+}
+
+function showOutOfStockMessage() {
+    const message = document.createElement('div');
+    message.className = 'out-of-stock-message';
+    message.innerHTML = `
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-circle"></i>
+            جميع المتغيرات غير متوفرة حالياً
+        </div>
+    `;
+    document.querySelector('.product-variants').appendChild(message);
+}
+```
+
+#### 4. خطأ: الحقول المخصصة فارغة
+```javascript
+// التعامل مع الحقول المخصصة الفارغة
+function displayCustomFields(fields) {
+    const container = document.querySelector('.custom-fields');
+    
+    if (!fields || fields.length === 0) {
+        container.style.display = 'none';
+        return;
+    }
+    
+    fields.forEach(field => {
+        if (!field.field_value || !field.field_value.ar) {
+            // إخفاء الحقول الفارغة
+            return;
+        }
+        
+        const fieldElement = createFieldElement(field);
+        container.appendChild(fieldElement);
+    });
+}
+
+function createFieldElement(field) {
+    const div = document.createElement('div');
+    div.className = 'field-item';
+    div.innerHTML = `
+        <span class="field-label">${field.label}:</span>
+        <span class="field-value">${field.field_value.ar}</span>
+    `;
+    return div;
+}
+```
+
+### 🔄 حالات التحميل والانتظار
+
+#### 1. عرض حالة التحميل
+```javascript
+function showLoadingState() {
+    const container = document.querySelector('.product-container');
+    container.innerHTML = `
+        <div class="loading-spinner">
+            <div class="spinner-border" role="status">
+                <span class="sr-only">جاري التحميل...</span>
+            </div>
+            <p>جاري تحميل تفاصيل المنتج...</p>
+        </div>
+    `;
+}
+
+function hideLoadingState() {
+    const spinner = document.querySelector('.loading-spinner');
+    if (spinner) {
+        spinner.remove();
+    }
+}
+```
+
+#### 2. تحميل تدريجي للمحتوى
+```javascript
+function loadProductContent(product) {
+    // تحميل المعلومات الأساسية أولاً
+    loadBasicInfo(product);
+    
+    // تحميل الصور
+    setTimeout(() => loadImages(product.images), 100);
+    
+    // تحميل المتغيرات
+    setTimeout(() => loadVariants(product.variants), 200);
+    
+    // تحميل الحقول المخصصة
+    setTimeout(() => loadCustomFields(product.custom_fields), 300);
+}
+
+function loadBasicInfo(product) {
+    document.querySelector('.product-title').textContent = product.title;
+    document.querySelector('.product-price').textContent = product.effective_price;
+    // ... باقي المعلومات الأساسية
+}
+```
+
+### 🛡️ التحقق من صحة البيانات
+
+#### 1. التحقق من البيانات المطلوبة
+```javascript
+function validateProductData(product) {
+    const required = ['id', 'title', 'price', 'sku'];
+    const missing = required.filter(field => !product[field]);
+    
+    if (missing.length > 0) {
+        console.error('بيانات مفقودة:', missing);
+        return false;
+    }
+    
+    return true;
+}
+
+function sanitizeProductData(product) {
+    // تنظيف البيانات من القيم الفارغة
+    return {
+        ...product,
+        title: product.title || 'بدون عنوان',
+        description: product.description || 'لا يوجد وصف',
+        price: product.price || '0',
+        stock_quantity: product.stock_quantity || 0
+    };
+}
+```
+
+#### 2. التحقق من صحة الصور
+```javascript
+function validateImages(images) {
+    if (!Array.isArray(images)) {
+        return [];
+    }
+    
+    return images.filter(image => {
+        return image && image.image_url && image.is_active;
+    });
+}
+```
+
+### 📊 مراقبة الأداء
+
+#### 1. قياس وقت التحميل
+```javascript
+function measureLoadTime() {
+    const startTime = performance.now();
+    
+    return {
+        end: () => {
+            const endTime = performance.now();
+            const loadTime = endTime - startTime;
+            
+            console.log(`وقت تحميل المنتج: ${loadTime.toFixed(2)}ms`);
+            
+            // إرسال البيانات للتحليل
+            if (loadTime > 3000) {
+                console.warn('تحميل بطيء للمنتج');
+            }
+        }
+    };
+}
+
+// استخدام
+const timer = measureLoadTime();
+fetch(`/api/products/${productId}/`)
+.then(response => response.json())
+.then(data => {
+    displayProduct(data.data);
+    timer.end();
+});
+```
+
+#### 2. مراقبة الأخطاء
+```javascript
+function trackProductErrors(error, productId) {
+    const errorData = {
+        productId: productId,
+        error: error.message,
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        url: window.location.href
+    };
+    
+    // إرسال البيانات للتحليل
+    console.error('خطأ في المنتج:', errorData);
+    
+    // يمكن إرسال البيانات لخدمة التحليل
+    // analytics.track('product_error', errorData);
+}
+```
+
+### 🎯 تحسينات إضافية
+
+#### 1. إعادة المحاولة التلقائية
+```javascript
+async function fetchProductWithRetry(productId, maxRetries = 3) {
+    for (let i = 0; i < maxRetries; i++) {
+        try {
+            const response = await fetch(`/api/products/${productId}/`);
+            if (response.ok) {
+                return await response.json();
+            }
+        } catch (error) {
+            console.warn(`محاولة ${i + 1} فشلت:`, error);
+            
+            if (i === maxRetries - 1) {
+                throw error;
+            }
+            
+            // انتظار قبل إعادة المحاولة
+            await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+        }
+    }
+}
+```
+
+#### 2. التحديث التلقائي للمخزون
+```javascript
+function autoUpdateStock(productId) {
+    // تحديث المخزون كل 5 دقائق
+    setInterval(async () => {
+        try {
+            const response = await fetch(`/api/products/${productId}/`);
+            const data = await response.json();
+            
+            if (data.success) {
+                updateStockDisplay(data.data.stock_quantity);
+            }
+        } catch (error) {
+            console.error('خطأ في تحديث المخزون:', error);
+        }
+    }, 5 * 60 * 1000); // 5 دقائق
+}
+
+function updateStockDisplay(newStock) {
+    const stockElement = document.querySelector('.stock-quantity');
+    if (stockElement) {
+        stockElement.textContent = newStock;
+        
+        // تحديث حالة المخزون
+        if (newStock <= 0) {
+            stockElement.classList.add('out-of-stock');
+        } else {
+            stockElement.classList.remove('out-of-stock');
+        }
+    }
+}
+```
 
 ## الجزء التالي: إدارة المتغيرات (ProductVariant APIs)
 

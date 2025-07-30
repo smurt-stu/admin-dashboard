@@ -195,6 +195,23 @@ export default function ProductsPage() {
             <i className="ri-add-line"></i>
             <span>إضافة منتج جديد</span>
           </Link>
+          
+          <Link
+            href="/admin/categories"
+            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center space-x-2 rtl:space-x-reverse cursor-pointer transition-colors"
+          >
+            <i className="ri-folder-line"></i>
+            <span>إدارة الفئات</span>
+          </Link>
+          
+          <Link
+            href="/admin/product-types"
+            className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 flex items-center space-x-2 rtl:space-x-reverse cursor-pointer transition-colors"
+          >
+            <i className="ri-settings-3-line"></i>
+            <span>أنواع المنتجات</span>
+          </Link>
+          
           {selectedArray.length > 0 && (
             <button
               onClick={handleBulkDelete}

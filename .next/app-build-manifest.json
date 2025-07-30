@@ -46,55 +46,45 @@
       "static/chunks/main-app.js",
       "static/chunks/app/admin/products/[id]/page.js"
     ],
-    "/admin/customers/page": [
+    "/admin/products/[id]/edit/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/admin/customers/page.js"
-    ],
-    "/admin/customers/[id]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/admin/customers/[id]/page.js"
-    ],
-    "/admin/customers/[id]/edit/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/admin/customers/[id]/edit/page.js"
-    ],
-    "/admin/marketing/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/admin/marketing/page.js"
-    ],
-    "/admin/reviews/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/admin/reviews/page.js"
+      "static/chunks/app/admin/products/[id]/edit/page.js"
     ],
     "/admin/products/create/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/admin/products/create/page.js"
     ],
-    "/admin/profile/page": [
+    "/admin/categories/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/admin/profile/page.js"
+      "static/chunks/app/admin/categories/page.js"
     ],
-    "/admin/products/[id]/edit/page": [
+    "/admin/product-types/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/admin/products/[id]/edit/page.js"
+      "static/chunks/app/admin/product-types/page.js"
     ],
-    "/admin/orders/page": [
+    "/admin/product-types/create/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/admin/orders/page.js"
+      "static/chunks/app/admin/product-types/create/page.js"
     ],
-    "/admin/orders/analytics/page": [
+    "/admin/product-types/[id]/edit/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/admin/orders/analytics/page.js"
+      "static/chunks/app/admin/product-types/[id]/edit/page.js"
+    ],
+    "/admin/categories/create/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/categories/create/page.js"
+    ],
+    "/admin/categories/[id]/edit/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/categories/[id]/edit/page.js"
     ]
   }
 }

@@ -1,15 +1,19 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
+
+import { ProductType } from '../../../../../lib/products/types';
 
 interface BasicInfoTabProps {
   formData: any;
   setFormData: (data: any) => void;
   categories: any[];
-  productTypes: { value: string; label: string; description: string }[];
+  productTypes: ProductType[];
+  onProductTypeChange?: (productTypeId: string) => void;
 }
 
-export default function BasicInfoTab({ formData, setFormData, categories, productTypes }: BasicInfoTabProps) {
+export default function BasicInfoTab({ formData, setFormData, categories, productTypes, onProductTypeChange }: BasicInfoTabProps) {
   const [showAdvancedFields, setShowAdvancedFields] = useState(false);
 
   const handleInputChange = (field: string, value: any) => {
@@ -47,31 +51,134 @@ export default function BasicInfoTab({ formData, setFormData, categories, produc
       {/* Product Type Selection */}
       <div className="bg-blue-50 p-4 rounded-lg">
         <h4 className="text-lg font-semibold text-blue-900 mb-3">نوع المنتج</h4>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {productTypes.map((type) => (
-            <div
-              key={type.value}
-              className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                formData.product_type === type.value
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-blue-300'
-              }`}
-              onClick={() => handleInputChange('product_type', type.value)}
-            >
-              <div className="flex items-center space-x-3 rtl:space-x-reverse">
-                <div className={`w-4 h-4 rounded-full border-2 ${
-                  formData.product_type === type.value
-                    ? 'border-blue-500 bg-blue-500'
-                    : 'border-gray-300'
-                }`}></div>
-                <div>
-                  <h5 className="font-medium text-gray-900">{type.label}</h5>
-                  <p className="text-sm text-gray-600">{type.description}</p>
-                </div>
+        <div className="text-sm text-gray-600 mb-4">
+          عدد أنواع المنتجات: {productTypes.length}
+          {formData.product_type && (
+            <span className="mr-4 text-green-600">
+              ✓ تم اختيار نوع المنتج
+            </span>
+          )}
+        </div>
+        
+        {productTypes.length === 0 ? (
+          <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+            <div className="flex items-center">
+              <i className="ri-error-warning-line text-2xl text-yellow-600 ml-3"></i>
+              <div>
+                <h5 className="text-lg font-semibold text-yellow-800">لا توجد أنواع منتجات متاحة</h5>
+                <p className="text-yellow-700">يرجى إنشاء أنواع منتجات أولاً من صفحة إدارة أنواع المنتجات</p>
+                <Link
+                  href="/admin/product-types/create"
+                  className="inline-block mt-2 bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700"
+                >
+                  إنشاء نوع منتج جديد
+                </Link>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {productTypes.map((type) => (
+              <div
+                key={type.id}
+                className={`p-4 border-2 rounded-lg cursor-pointer transition-all hover:shadow-md ${
+                  formData.product_type === type.id
+                    ? 'border-blue-500 bg-blue-50 shadow-md'
+                    : 'border-gray-200 hover:border-blue-300'
+                }`}
+                onClick={() => {
+                  handleInputChange('product_type', type.id);
+                  onProductTypeChange?.(type.id);
+                }}
+              >
+                <div className="flex items-start space-x-3 rtl:space-x-reverse">
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                    formData.product_type === type.id
+                      ? 'border-blue-500 bg-blue-500'
+                      : 'border-gray-300'
+                  }`}>
+                    {formData.product_type === type.id && (
+                      <i className="ri-check-line text-white text-sm"></i>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2 rtl:space-x-reverse mb-1">
+                      <h5 className="font-medium text-gray-900">
+                        {typeof type.display_name === 'string' 
+                          ? type.display_name 
+                          : type.display_name?.ar || type.display_name?.en || type.name
+                        }
+                      </h5>
+                      {type.is_digital && (
+                        <span className="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
+                          رقمي
+                        </span>
+                      )}
+                      {type.has_variants && (
+                        <span className="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">
+                          متغيرات
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-600 mb-2">
+                      {type.description || 
+                       (typeof type.display_name === 'object' ? type.display_name?.en : '') ||
+                       type.name
+                      }
+                    </p>
+                    
+                    {/* Product Type Features */}
+                    <div className="space-y-1 text-xs text-gray-500">
+                      <div className="flex items-center space-x-1 rtl:space-x-reverse">
+                        <i className={`ri-${type.is_digital ? 'file-text-line' : 'box-line'}`}></i>
+                        <span>{type.is_digital ? 'منتج رقمي' : 'منتج مادي'}</span>
+                      </div>
+                      <div className="flex items-center space-x-1 rtl:space-x-reverse">
+                        <i className={`ri-${type.requires_shipping ? 'truck-line' : 'download-line'}`}></i>
+                        <span>{type.requires_shipping ? 'يتطلب شحن' : 'لا يتطلب شحن'}</span>
+                      </div>
+                      <div className="flex items-center space-x-1 rtl:space-x-reverse">
+                        <i className={`ri-${type.track_stock ? 'bar-chart-line' : 'eye-off-line'}`}></i>
+                        <span>{type.track_stock ? 'تتبع المخزون' : 'لا يتتبع المخزون'}</span>
+                      </div>
+                    </div>
+                    
+                    {/* Custom Fields Count */}
+                    {type.settings?.custom_fields && type.settings.custom_fields.length > 0 && (
+                      <div className="mt-2 pt-2 border-t border-gray-200">
+                        <div className="flex items-center space-x-1 rtl:space-x-reverse">
+                          <i className="ri-settings-3-line text-xs"></i>
+                          <span className="text-xs font-medium">
+                            {type.settings.custom_fields.length} حقل مخصص
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        
+        {/* Selected Product Type Info */}
+        {formData.product_type && (
+          <div className="mt-4 p-3 bg-green-50 rounded-lg border border-green-200">
+            <div className="flex items-center space-x-2 rtl:space-x-reverse">
+              <i className="ri-check-line text-green-600"></i>
+              <span className="text-sm font-medium text-green-800">
+                تم اختيار نوع المنتج: {
+                  productTypes.find(t => t.id === formData.product_type)?.display_name?.ar ||
+                  productTypes.find(t => t.id === formData.product_type)?.display_name?.en ||
+                  productTypes.find(t => t.id === formData.product_type)?.name
+                }
+              </span>
+            </div>
+            <p className="text-xs text-green-700 mt-1">
+              ستظهر الحقول المخصصة لهذا النوع في التبويب التالي
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Basic Information */}

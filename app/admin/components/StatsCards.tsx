@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ProductService } from '../../../lib/productService';
+import { AnalyticsService } from '../../../lib/products/analyticsService';
 import { UserService, UsersResponse } from '../../../lib/userService';
 
 interface DashboardAnalytics {
@@ -27,7 +27,7 @@ export default function StatsCards() {
     try {
       setLoading(true);
       const [productAnalytics, usersResponse] = await Promise.all([
-        ProductService.getAnalyticsDashboard(),
+        AnalyticsService.getAnalyticsDashboard(),
         UserService.getUsers(1, '')
       ]);
       setAnalytics(productAnalytics);

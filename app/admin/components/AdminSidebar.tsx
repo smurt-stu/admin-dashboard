@@ -8,10 +8,19 @@ import { useState, useEffect } from 'react';
 export default function AdminSidebar() {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
   // إغلاق السايد بار عند تغيير الصفحة في وضع الموبايل
   useEffect(() => {
     setIsMobileMenuOpen(false);
+  }, [pathname]);
+
+  // فتح القوائم الفرعية تلقائياً للعناصر النشطة
+  useEffect(() => {
+    const activeItems = menuItems.filter(item => 
+      item.subItems && hasActiveSubItem(item.subItems)
+    );
+    setExpandedItems(activeItems.map(item => item.href));
   }, [pathname]);
 
   // منع التمرير في الخلفية عندما يكون السايد بار مفتوحاً
@@ -47,7 +56,17 @@ export default function AdminSidebar() {
 
   const menuItems = [
     { href: '/admin', icon: 'ri-dashboard-fill', label: 'لوحة القيادة' },
-    { href: '/admin/products', icon: 'ri-box-3-fill', label: 'إدارة المنتجات' },
+    { 
+      href: '/admin/products', 
+      icon: 'ri-box-3-fill', 
+      label: 'إدارة المنتجات',
+      subItems: [
+        { href: '/admin/products', icon: 'ri-list-check', label: 'قائمة المنتجات' },
+        { href: '/admin/products/create', icon: 'ri-add-line', label: 'إضافة منتج جديد' },
+        { href: '/admin/categories', icon: 'ri-folder-line', label: 'إدارة الفئات' },
+        { href: '/admin/product-types', icon: 'ri-settings-3-line', label: 'أنواع المنتجات' },
+      ]
+    },
     { href: '/admin/orders', icon: 'ri-shopping-bag-fill', label: 'إدارة الطلبات' },
     { href: '/admin/customers', icon: 'ri-user-fill', label: 'إدارة العملاء' },
     { href: '/admin/reviews', icon: 'ri-star-fill', label: 'إدارة المراجعات' },
@@ -61,6 +80,22 @@ export default function AdminSidebar() {
 
   const handleOverlayClick = () => {
     setIsMobileMenuOpen(false);
+  };
+
+  const toggleSubMenu = (href: string) => {
+    setExpandedItems(prev => 
+      prev.includes(href) 
+        ? prev.filter(item => item !== href)
+        : [...prev, href]
+    );
+  };
+
+  const isActive = (href: string) => {
+    return pathname === href || pathname.startsWith(href + '/');
+  };
+
+  const hasActiveSubItem = (subItems: any[]) => {
+    return subItems?.some(item => isActive(item.href));
   };
 
   return (
@@ -98,19 +133,63 @@ export default function AdminSidebar() {
           
           <nav className="space-y-2 flex-1">
             {menuItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={`flex items-center space-x-3 rtl:space-x-reverse px-3 sm:px-4 py-3 rounded-lg transition-colors whitespace-nowrap cursor-pointer text-responsive ${
-                  pathname === item.href
-                    ? 'bg-blue-50 text-blue-600 border-r-4 border-blue-600'
-                    : 'text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                <i className={`${item.icon} text-lg sm:text-xl`}></i>
-                <span className="font-medium">{item.label}</span>
-              </Link>
+              <div key={item.href}>
+                {item.subItems ? (
+                  // عنصر مع قائمة فرعية
+                  <div>
+                    <button
+                      onClick={() => toggleSubMenu(item.href)}
+                      className={`w-full flex items-center justify-between space-x-3 rtl:space-x-reverse px-3 sm:px-4 py-3 rounded-lg transition-colors whitespace-nowrap cursor-pointer text-responsive ${
+                        isActive(item.href) || hasActiveSubItem(item.subItems)
+                          ? 'bg-blue-50 text-blue-600 border-r-4 border-blue-600'
+                          : 'text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-3 rtl:space-x-reverse">
+                        <i className={`${item.icon} text-lg sm:text-xl`}></i>
+                        <span className="font-medium">{item.label}</span>
+                      </div>
+                      <i className={`ri-arrow-down-s-line transition-transform ${
+                        expandedItems.includes(item.href) ? 'rotate-180' : ''
+                      }`}></i>
+                    </button>
+                    
+                    {expandedItems.includes(item.href) && (
+                      <div className="mr-4 mt-2 space-y-1">
+                        {item.subItems.map((subItem) => (
+                          <Link
+                            key={subItem.href}
+                            href={subItem.href}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className={`flex items-center space-x-3 rtl:space-x-reverse px-3 sm:px-4 py-2 rounded-lg transition-colors whitespace-nowrap cursor-pointer text-sm ${
+                              isActive(subItem.href)
+                                ? 'bg-blue-100 text-blue-600'
+                                : 'text-gray-600 hover:bg-gray-50'
+                            }`}
+                          >
+                            <i className={`${subItem.icon} text-base`}></i>
+                            <span className="font-medium">{subItem.label}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  // عنصر عادي بدون قائمة فرعية
+                  <Link
+                    href={item.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`flex items-center space-x-3 rtl:space-x-reverse px-3 sm:px-4 py-3 rounded-lg transition-colors whitespace-nowrap cursor-pointer text-responsive ${
+                      isActive(item.href)
+                        ? 'bg-blue-50 text-blue-600 border-r-4 border-blue-600'
+                        : 'text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    <i className={`${item.icon} text-lg sm:text-xl`}></i>
+                    <span className="font-medium">{item.label}</span>
+                  </Link>
+                )}
+              </div>
             ))}
           </nav>
         </div>

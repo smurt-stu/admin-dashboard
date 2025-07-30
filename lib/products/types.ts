@@ -38,10 +38,14 @@ export interface CustomField {
     ar: string;
     en: string;
   };
-  type: 'text' | 'textarea' | 'select' | 'number' | 'boolean' | 'date';
+  type: 'text' | 'textarea' | 'select' | 'number' | 'boolean' | 'date' | 'color' | 'email' | 'phone' | 'url' | 'json' | 'multilingual';
   required: boolean;
   options?: string[];
   default_value?: any;
+  description?: string;
+  searchable?: boolean;
+  filterable?: boolean;
+  display_order?: number;
 }
 
 // === Product Interface ===
@@ -393,6 +397,7 @@ export interface StockUpdateData {
 
 // === Image Upload Types ===
 export interface ImageUploadData {
+  product: number | string; // معرف المنتج مطلوب
   image: File;
   image_type?: string;
   alt_text?: {
@@ -403,6 +408,10 @@ export interface ImageUploadData {
     ar: string;
     en: string;
   };
+  sort_order?: number;
+  is_active?: boolean;
+  is_preview?: boolean;
+  page_number?: number;
 }
 
 // === Bulk Update Types ===

@@ -179,8 +179,8 @@ export default function Sidebar({ formData, saving, onSubmit }: SidebarProps) {
           </div>
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-700">الصورة الرئيسية</span>
-            <span className={`text-sm ${formData.main_image ? 'text-green-600' : 'text-gray-400'}`}>
-              {formData.main_image ? '✓' : '○'}
+            <span className={`text-sm ${formData.main_image || formData.main_image_file ? 'text-green-600' : 'text-gray-400'}`}>
+              {formData.main_image || formData.main_image_file ? '✓' : '○'}
             </span>
           </div>
           {formData.product_type === 'digital' && (
@@ -197,16 +197,16 @@ export default function Sidebar({ formData, saving, onSubmit }: SidebarProps) {
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-gray-700">النسبة المكتملة</span>
             <span className="text-sm font-medium text-blue-600">
-              {(() => {
-                const checks = [
-                  formData.title && formData.category,
-                  formData.description,
-                  formData.price && parseFloat(formData.price) > 0,
-                  formData.main_image,
-                  formData.product_type !== 'digital' || formData.digital_file
-                ].filter(Boolean).length;
-                return `${Math.round((checks / 5) * 100)}%`;
-              })()}
+                          {(() => {
+              const checks = [
+                formData.title && formData.category,
+                formData.description,
+                formData.price && parseFloat(formData.price) > 0,
+                formData.main_image || formData.main_image_file,
+                formData.product_type !== 'digital' || formData.digital_file
+              ].filter(Boolean).length;
+              return `${Math.round((checks / 5) * 100)}%`;
+            })()}
             </span>
           </div>
         </div>

@@ -11,13 +11,92 @@ const BASE_URL = 'https://smart-ai-api.onrender.com/api/v1';
 export class ImageService {
   // === PRODUCT IMAGES ===
   
-  static async getProductImages(productId?: number): Promise<ProductImage[]> {
+  static async getProductImages(productId?: number | string): Promise<ProductImage[]> {
     const queryParams = productId ? `?product=${productId}` : '';
     const response = await fetch(
       `${BASE_URL}/store/products/images/${queryParams}`,
       { headers: getAuthHeaders() }
     );
     return handleApiError(response);
+  }
+
+  // التحقق من وجود المنتج قبل رفع الصور
+  static async validateProductExists(productId: string | number): Promise<boolean> {
+    try {
+      const response = await fetch(`${BASE_URL}/store/products/products/${productId}/`, {
+        headers: getAuthHeaders()
+      });
+      return response.ok;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  // رفع صورة مع إنشاء المنتج في نفس الوقت
+  static async uploadImageWithProduct(productData: any, imageFile?: File): Promise<{ product: any, image?: ProductImage }> {
+    const token = localStorage.getItem('access_token');
+    
+    // إنشاء FormData للمنتج والصورة
+    const formData = new FormData();
+    
+    // إضافة بيانات المنتج
+    Object.keys(productData).forEach(key => {
+      if (productData[key] !== null && productData[key] !== undefined) {
+        if (typeof productData[key] === 'object') {
+          formData.append(key, JSON.stringify(productData[key]));
+        } else {
+          formData.append(key, productData[key].toString());
+        }
+      }
+    });
+    
+    // إضافة الصورة إذا كانت موجودة
+    if (imageFile) {
+      // التحقق من صحة الملف
+      const validationErrors = validateImageFile(imageFile);
+      if (validationErrors.length > 0) {
+        throw new Error(validationErrors.join(', '));
+      }
+      
+      formData.append('main_image', imageFile);
+    }
+    
+    const response = await fetch(
+      `${BASE_URL}/store/products/products/`,
+      {
+        method: 'POST',
+        headers: {
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        },
+        body: formData
+      }
+    );
+    
+    const result = await handleApiError(response);
+    
+    // إذا تم رفع صورة مع المنتج، قم بإنشاء كائن الصورة
+    let image: ProductImage | undefined;
+    if (imageFile && result.id) {
+      image = {
+        id: Date.now().toString(), // معرف مؤقت
+        image: URL.createObjectURL(imageFile),
+        image_type: 'main',
+        alt_text: {
+          ar: 'الصورة الرئيسية للمنتج',
+          en: 'Main product image'
+        },
+        caption: {
+          ar: 'الصورة الرئيسية',
+          en: 'Main image'
+        },
+        is_primary: true,
+        display_order: 1,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+    }
+    
+    return { product: result, image };
   }
 
   static async uploadProductImage(imageData: ImageUploadData): Promise<ProductImage> {
@@ -27,14 +106,35 @@ export class ImageService {
       throw new Error(validationErrors.join(', '));
     }
 
+    // Validate product ID
+    if (!imageData.product) {
+      throw new Error('معرف المنتج مطلوب');
+    }
+
+    // التحقق من وجود المنتج
+    const productExists = await this.validateProductExists(imageData.product);
+    if (!productExists) {
+      throw new Error(`المنتج غير موجود: ${imageData.product}`);
+    }
+
     const token = localStorage.getItem('access_token');
     const formData = new FormData();
     
     // Add basic data
     formData.append('product', imageData.product.toString());
     formData.append('image', imageData.image);
-    formData.append('image_type', imageData.image_type);
-    formData.append('alt_text', imageData.alt_text || '');
+    formData.append('image_type', imageData.image_type || 'gallery');
+    
+    // Add alt_text as JSON if provided
+    if (imageData.alt_text) {
+      formData.append('alt_text', JSON.stringify(imageData.alt_text));
+    }
+    
+    // Add caption as JSON if provided
+    if (imageData.caption) {
+      formData.append('caption', JSON.stringify(imageData.caption));
+    }
+    
     formData.append('sort_order', (imageData.sort_order || 0).toString());
     formData.append('is_active', (imageData.is_active !== false).toString());
     formData.append('is_preview', (imageData.is_preview || false).toString());
@@ -119,7 +219,10 @@ export class ImageService {
           product: productId,
           image: images[i],
           image_type: i === 0 ? 'main' : imageType,
-          alt_text: `صورة ${i + 1} للمنتج`,
+          alt_text: {
+            ar: `صورة ${i + 1} للمنتج`,
+            en: `Product image ${i + 1}`
+          },
           sort_order: i + 1
         };
         

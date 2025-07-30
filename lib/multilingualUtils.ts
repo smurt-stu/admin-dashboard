@@ -149,21 +149,22 @@ export function convertAPIToFormData(apiData: any): any {
 }
 
 // Validate image file according to API guide
-export function validateImageFile(file: File): string[] {
-  const errors: string[] = [];
-  const maxSize = 5 * 1024 * 1024; // 5MB
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-  
-  if (file.size > maxSize) {
-    errors.push('حجم الملف يجب أن يكون أقل من 5MB');
-  }
-  
-  if (!allowedTypes.includes(file.type)) {
-    errors.push('نوع الملف غير مدعوم. الأنواع المدعومة: JPEG, PNG, WebP');
-  }
-  
-  return errors;
-}
+// This function is now imported from lib/products/utils.ts
+// export function validateImageFile(file: File): string[] {
+//   const errors: string[] = [];
+//   const maxSize = 5 * 1024 * 1024; // 5MB
+//   const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+//   
+//   if (file.size > maxSize) {
+//     errors.push('حجم الملف يجب أن يكون أقل من 5MB');
+//   }
+//   
+//   if (!allowedTypes.includes(file.type)) {
+//     errors.push('نوع الملف غير مدعوم. الأنواع المدعومة: JPEG, PNG, WebP');
+//   }
+//   
+//   return errors;
+// }
 
 // Validate ISBN format
 function validateISBN(isbn: string): boolean {
@@ -195,6 +196,26 @@ function validateISBN(isbn: string): boolean {
   return false;
 }
 
+// Remove empty fields from data
+function removeEmptyFields(data: any): any {
+  const cleaned = { ...data };
+  
+  Object.keys(cleaned).forEach(key => {
+    if (cleaned[key] === '' || cleaned[key] === null || cleaned[key] === undefined) {
+      delete cleaned[key];
+    } else if (Array.isArray(cleaned[key]) && cleaned[key].length === 0) {
+      delete cleaned[key];
+    } else if (typeof cleaned[key] === 'object' && cleaned[key] !== null) {
+      cleaned[key] = removeEmptyFields(cleaned[key]);
+      if (Object.keys(cleaned[key]).length === 0) {
+        delete cleaned[key];
+      }
+    }
+  });
+  
+  return cleaned;
+}
+
 // Create product data according to API guide
 export function createProductData(formData: any): any {
   // Validate ISBN if provided
@@ -203,18 +224,29 @@ export function createProductData(formData: any): any {
   }
   
   // Validate category
-  if (!formData.category || isNaN(parseInt(formData.category))) {
+  if (!formData.category) {
     throw new Error('يجب اختيار فئة صحيحة');
   }
   
+  // تحويل category إلى string إذا كان رقم
+  const categoryId = typeof formData.category === 'number' ? formData.category.toString() : formData.category;
+  
   // Validate product_type
-  const validProductTypes = ['physical', 'digital', 'service', 'subscription', 'bundle'];
-  if (formData.product_type && !validProductTypes.includes(formData.product_type)) {
-    throw new Error('نوع المنتج غير صحيح. الأنواع المتاحة: physical, digital, service, subscription, bundle');
+  if (formData.product_type) {
+    // إذا كان product_type UUID، نرسله كما هو
+    // إذا كان string، نتحقق من أنه نوع صحيح
+    const validProductTypes = ['physical', 'digital', 'service', 'subscription', 'bundle'];
+    if (typeof formData.product_type === 'string' && !validProductTypes.includes(formData.product_type)) {
+      // لا نرمي خطأ إذا كان UUID - هذا طبيعي
+      // throw new Error('نوع المنتج غير صحيح. الأنواع المتاحة: physical, digital, service, subscription, bundle');
+    }
   }
   
-  // Validate main image
-  if (!formData.main_image) {
+  // تحويل product_type إلى string إذا كان رقم
+  const productTypeId = typeof formData.product_type === 'number' ? formData.product_type.toString() : formData.product_type;
+  
+  // Validate main image (only for creation, not update)
+  if (!formData.main_image && !formData.id) {
     throw new Error('الصورة الرئيسية مطلوبة');
   }
   
@@ -243,15 +275,15 @@ export function createProductData(formData: any): any {
     } : undefined,
     
     // === معلومات الفئة ===
-    category: parseInt(formData.category) || 1,
+    category: categoryId, // إرسال UUID مباشرة
     
     // === نوع المنتج ===
-    product_type: formData.product_type || "physical",
+    product_type: productTypeId || "physical",
     
     // === التسعير ===
-    price: formData.price || "0.00",
-    compare_price: formData.compare_price || undefined,
-    cost_price: formData.cost_price || undefined,
+    price: parseFloat(formData.price || "0.00").toString(),
+    compare_price: formData.compare_price ? parseFloat(formData.compare_price).toString() : undefined,
+    cost_price: formData.cost_price ? parseFloat(formData.cost_price).toString() : undefined,
     discount_percentage: formData.discount_percentage || undefined,
     
     // === معلومات المنتج التقني ===
@@ -268,9 +300,9 @@ export function createProductData(formData: any): any {
     publication_date: formData.publication_date || undefined,
     
     // === إدارة المخزون ===
-    stock_quantity: formData.stock_quantity || 0,
-    min_stock_alert: formData.min_stock_alert || 10,
-    max_order_quantity: formData.max_order_quantity || 5,
+    stock_quantity: parseInt(formData.stock_quantity || 0),
+    min_stock_alert: parseInt(formData.min_stock_alert || 10),
+    max_order_quantity: parseInt(formData.max_order_quantity || 5),
     track_stock: formData.track_stock !== false,
     
     // === الشحن والأبعاد ===
@@ -309,13 +341,64 @@ export function createProductData(formData: any): any {
     specifications: formData.specifications || undefined,
     
     // === الملفات الرقمية ===
-    digital_file: undefined, // سيتم رفعه منفصلاً
-    sample_file: undefined, // ملف العينة (اختياري)
+    digital_file: formData.digital_file || undefined,
+    sample_file: formData.sample_file || undefined,
     
     // === الصور ===
-    cover_image: undefined, // سيتم رفعه منفصلاً
-    images: [] // سيتم رفعها منفصلاً
+    cover_image: formData.cover_image || undefined,
+    main_image: formData.main_image || undefined,
+    images: formData.images || []
   };
   
-  return productData;
+  // === الحقول المخصصة ===
+  // تحويل custom_fields إلى custom_fields_data بالشكل المتوقع من الباكند
+  if (formData.custom_fields_data && Object.keys(formData.custom_fields_data).length > 0) {
+    const customFieldsData: Record<string, any> = {};
+    
+    Object.entries(formData.custom_fields_data).forEach(([fieldName, fieldValue]) => {
+      // إذا كان الحقل يحتوي على معلومات إضافية (مثل type, label, options)
+      if (typeof fieldValue === 'object' && fieldValue !== null && !Array.isArray(fieldValue)) {
+        const fieldObj = fieldValue as any;
+        
+        // إذا كان الحقل متعدد اللغات
+        if (fieldObj.ar !== undefined || fieldObj.en !== undefined) {
+          customFieldsData[fieldName] = {
+            value: fieldValue,
+            type: 'multilingual',
+            label: { ar: fieldName, en: fieldName }, // سيتم تحديثه من الباكند
+            required: false
+          };
+        } else {
+          // إذا كان الحقل يحتوي على معلومات كاملة
+          customFieldsData[fieldName] = {
+            value: fieldObj.value || fieldValue,
+            type: fieldObj.type || 'text',
+            label: fieldObj.label || { ar: fieldName, en: fieldName },
+            required: fieldObj.required || false,
+            options: fieldObj.options || [],
+            searchable: fieldObj.searchable || false,
+            filterable: fieldObj.filterable || false
+          };
+        }
+      } else {
+        // إذا كان الحقل قيمة بسيطة
+        customFieldsData[fieldName] = {
+          value: fieldValue,
+          type: 'text', // نوع افتراضي
+          label: { ar: fieldName, en: fieldName },
+          required: false
+        };
+      }
+    });
+    
+    productData.custom_fields_data = customFieldsData;
+  }
+  
+  // إزالة الحقول الفارغة
+  const cleanedData = removeEmptyFields(productData);
+  
+  // طباعة البيانات للتصحيح
+  console.log('Processed product data:', cleanedData);
+  
+  return cleanedData;
 } 
