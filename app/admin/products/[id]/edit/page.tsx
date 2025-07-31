@@ -336,7 +336,7 @@ export default function EditProductPage() {
       model_number: productData.model_number || '',
       price: productData.price || '',
       compare_price: productData.compare_price || '',
-      cost_price: productData.cost_price || '',
+      cost_price: productData.cost_price !== null && productData.cost_price !== undefined ? productData.cost_price.toString() : '',
       discount_percentage: productData.discount_percentage || 0,
       specifications: typeof (productData as any).specifications === 'string' 
         ? { ar: (productData as any).specifications, en: '' }
@@ -351,7 +351,7 @@ export default function EditProductPage() {
       max_order_quantity: productData.max_order_quantity || 10,
       track_stock: productData.track_stock !== false,
       requires_shipping: productData.requires_shipping !== false,
-      weight: productData.weight || '',
+      weight: productData.weight !== null && productData.weight !== undefined ? productData.weight.toString() : '',
       dimensions: productData.dimensions || { length: 0, width: 0, height: 0 },
       warranty_period: productData.warranty_period || 12,
       warranty_type: productData.warranty_type || '',

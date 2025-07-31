@@ -202,7 +202,7 @@ function removeEmptyFields(data: any): any {
   
   Object.keys(cleaned).forEach(key => {
     // لا نزيل الحقول التي لها قيمة 0 أو false لأنها قيم صحيحة
-    if (cleaned[key] === '' || cleaned[key] === null || cleaned[key] === undefined) {
+    if (cleaned[key] === '' || cleaned[key] === null || cleaned[key] === undefined || cleaned[key] === 'NaN') {
       delete cleaned[key];
     } else if (Array.isArray(cleaned[key]) && cleaned[key].length === 0) {
       delete cleaned[key];
@@ -284,8 +284,20 @@ export function createProductData(formData: any): any {
     // === التسعير ===
     price: parseFloat(formData.price || "0.00").toString(),
     compare_price: formData.compare_price ? parseFloat(formData.compare_price).toString() : undefined,
-    cost_price: formData.cost_price !== undefined && formData.cost_price !== null ? parseFloat(formData.cost_price).toString() : undefined,
-    discount_percentage: formData.discount_percentage !== undefined && formData.discount_percentage !== null ? parseFloat(formData.discount_percentage).toString() : undefined,
+    cost_price: (() => {
+      if (formData.cost_price === undefined || formData.cost_price === null || formData.cost_price === '') {
+        return undefined;
+      }
+      const parsed = parseFloat(formData.cost_price);
+      return isNaN(parsed) ? undefined : parsed.toString();
+    })(),
+    discount_percentage: (() => {
+      if (formData.discount_percentage === undefined || formData.discount_percentage === null || formData.discount_percentage === '') {
+        return undefined;
+      }
+      const parsed = parseFloat(formData.discount_percentage);
+      return isNaN(parsed) ? undefined : parsed.toString();
+    })(),
     
     // === معلومات المنتج التقني ===
     sku: formData.sku || undefined,
@@ -297,22 +309,49 @@ export function createProductData(formData: any): any {
     author: formData.author || undefined,
     isbn: formData.isbn || undefined,
     language: formData.language || "ar",
-    pages_count: formData.pages_count || undefined,
+    pages_count: (() => {
+      if (formData.pages_count === undefined || formData.pages_count === null || formData.pages_count === '') {
+        return undefined;
+      }
+      const parsed = parseInt(formData.pages_count);
+      return isNaN(parsed) ? undefined : parsed;
+    })(),
     publication_date: formData.publication_date || undefined,
     
     // === إدارة المخزون ===
-    stock_quantity: parseInt(formData.stock_quantity || 0),
-    min_stock_alert: parseInt(formData.min_stock_alert || 10),
-    max_order_quantity: parseInt(formData.max_order_quantity || 5),
+    stock_quantity: (() => {
+      const parsed = parseInt(formData.stock_quantity || 0);
+      return isNaN(parsed) ? 0 : parsed;
+    })(),
+    min_stock_alert: (() => {
+      const parsed = parseInt(formData.min_stock_alert || 10);
+      return isNaN(parsed) ? 10 : parsed;
+    })(),
+    max_order_quantity: (() => {
+      const parsed = parseInt(formData.max_order_quantity || 5);
+      return isNaN(parsed) ? 5 : parsed;
+    })(),
     track_stock: formData.track_stock !== false,
     
     // === الشحن والأبعاد ===
     requires_shipping: formData.requires_shipping !== false,
-    weight: formData.weight !== undefined && formData.weight !== null ? formData.weight.toString() : undefined,
+    weight: (() => {
+      if (formData.weight === undefined || formData.weight === null || formData.weight === '') {
+        return undefined;
+      }
+      const parsed = parseFloat(formData.weight);
+      return isNaN(parsed) ? undefined : parsed.toString();
+    })(),
     dimensions: formData.dimensions || undefined,
     
     // === الضمان والخدمة ===
-    warranty_period: formData.warranty_period || undefined,
+    warranty_period: (() => {
+      if (formData.warranty_period === undefined || formData.warranty_period === null || formData.warranty_period === '') {
+        return undefined;
+      }
+      const parsed = parseInt(formData.warranty_period);
+      return isNaN(parsed) ? undefined : parsed;
+    })(),
     warranty_type: formData.warranty_type || undefined,
     condition: formData.condition || "new",
     
