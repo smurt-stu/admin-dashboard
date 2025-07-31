@@ -9,6 +9,7 @@
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "build:vercel": "next build",
+    "build:no-types": "SKIP_TYPE_CHECK=true next build",
     "analyze": "ANALYZE=true npm run build"
   },
   "dependencies": {
