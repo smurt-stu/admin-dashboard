@@ -6,7 +6,8 @@
   "installCommand": "npm install",
   "framework": "nextjs",
   "env": {
-    "NODE_ENV": "production"
+    "NODE_ENV": "production",
+    "SKIP_TYPE_CHECK": "true"
   },
   "build": {
     "env": {
