@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { AuthService } from '@/lib/auth';
+import { AuthService } from '../../../lib/auth';
 
 interface UserProfile {
   id: string;
