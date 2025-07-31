@@ -385,11 +385,21 @@ export default function EditProductPage() {
             const fieldValue = field.field_value;
             const fieldName = field.field_name || field.name;
             
-            if (typeof fieldValue === 'object' && fieldValue !== null) {
-              acc[fieldName] = fieldValue;
-            } else {
-              acc[fieldName] = fieldValue || '';
-            }
+            console.log('Converting custom field:', { fieldName, fieldValue, field });
+            
+            // تحويل الحقل إلى التنسيق المتوقع
+            acc[fieldName] = {
+              value: fieldValue,
+              type: field.field_type || 'text',
+              label: {
+                ar: field.label || fieldName,
+                en: field.label || fieldName
+              },
+              required: field.is_required || false,
+              options: field.options || [],
+              searchable: field.is_searchable || false,
+              filterable: field.is_filterable || false
+            };
             
             return acc;
           }, {})
@@ -528,6 +538,13 @@ export default function EditProductPage() {
         ...formData,
         has_variants: selectedProductTypeWithSettings?.has_variants || false
       };
+      
+      // طباعة تشخيصية
+      console.log('Form data with variants:', {
+        has_variants: formDataWithVariants.has_variants,
+        selectedProductTypeWithSettings: selectedProductTypeWithSettings,
+        custom_fields_data: formDataWithVariants.custom_fields_data
+      });
       
       // Create product data according to API guide
       logger.logDataLoad('Creating product data');

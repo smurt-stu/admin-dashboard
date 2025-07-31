@@ -359,7 +359,14 @@ export function createProductData(formData: any): any {
     const hasVariants = formData.has_variants || 
                        (formData.product_type && typeof formData.product_type === 'object' && formData.product_type.has_variants);
     
+    console.log('Checking variants support:', { 
+      hasVariants, 
+      formDataHasVariants: formData.has_variants,
+      productTypeHasVariants: formData.product_type && typeof formData.product_type === 'object' ? formData.product_type.has_variants : 'N/A'
+    });
+    
     if (hasVariants) {
+      console.log('Converting custom_fields_data to variants');
       const variants: any[] = [];
       
       Object.entries(formData.custom_fields_data).forEach(([fieldName, fieldValue]) => {
@@ -388,7 +395,9 @@ export function createProductData(formData: any): any {
       });
       
       productData.variants = variants;
+      console.log('Created variants:', variants);
     } else {
+      console.log('Sending as custom_fields_data');
       // إذا كان المنتج لا يدعم المتغيرات، نرسل كـ custom_fields_data
       const customFieldsData: Record<string, any> = {};
       
