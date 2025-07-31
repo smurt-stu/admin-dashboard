@@ -110,8 +110,29 @@ export default function VariantsTab({ product, formData, handleInputChange, sele
     return editingField?.variantId === variantId && editingField?.field === field;
   };
 
-  const supportsVariants = selectedProductTypeWithSettings?.has_variants || 
-                          selectedProductTypeWithSettings?.settings?.supports_variants;
+  // تحسين التحقق من دعم المتغيرات
+  const supportsVariants = () => {
+    // التحقق من نوع المنتج المحدد
+    if (selectedProductTypeWithSettings?.has_variants === true) {
+      return true;
+    }
+    
+    // التحقق من إعدادات نوع المنتج
+    if (selectedProductTypeWithSettings?.settings?.supports_variants === true) {
+      return true;
+    }
+    
+    // التحقق من نوع المنتج في formData
+    if (formData.product_type) {
+      // البحث في قائمة أنواع المنتجات المحملة
+      const productType = product.product_type;
+      if (productType && typeof productType === 'object' && productType.has_variants === true) {
+        return true;
+      }
+    }
+    
+    return false;
+  };
 
   const renderOptions = (options: any) => {
     if (!options || Object.keys(options).length === 0) {
@@ -137,6 +158,16 @@ export default function VariantsTab({ product, formData, handleInputChange, sele
     return 'متوفر';
   };
 
+  // معلومات التشخيص
+  const debugInfo = {
+    selectedProductType: selectedProductTypeWithSettings,
+    hasVariants: selectedProductTypeWithSettings?.has_variants,
+    settingsSupportsVariants: selectedProductTypeWithSettings?.settings?.supports_variants,
+    productTypeFromForm: formData.product_type,
+    productTypeFromProduct: product.product_type,
+    supportsVariantsResult: supportsVariants()
+  };
+
   return (
     <div className="space-y-6">
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
@@ -146,8 +177,14 @@ export default function VariantsTab({ product, formData, handleInputChange, sele
             <p className="text-sm text-gray-500 mt-1">
               إدارة متغيرات المنتج مثل الألوان والمقاسات
             </p>
+            {/* معلومات التشخيص */}
+            <div className="mt-2 text-xs text-gray-400">
+              <div>نوع المنتج: {selectedProductTypeWithSettings?.name || 'غير محدد'}</div>
+              <div>يدعم المتغيرات: {supportsVariants() ? 'نعم' : 'لا'}</div>
+              <div>has_variants: {selectedProductTypeWithSettings?.has_variants?.toString() || 'غير محدد'}</div>
+            </div>
           </div>
-          {supportsVariants && (
+          {supportsVariants() && (
             <button
               type="button"
               onClick={() => setShowAddVariant(true)}
@@ -159,7 +196,7 @@ export default function VariantsTab({ product, formData, handleInputChange, sele
           )}
         </div>
 
-        {supportsVariants ? (
+        {supportsVariants() ? (
           <div className="space-y-4">
             {variants.length > 0 ? (
               <div className="grid gap-4">
@@ -397,7 +434,19 @@ export default function VariantsTab({ product, formData, handleInputChange, sele
               <i className="ri-git-commit-line text-6xl text-gray-300"></i>
             </div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">نوع المنتج لا يدعم المتغيرات</h3>
-            <p className="text-sm text-gray-500">اختر نوع منتج يدعم المتغيرات لإضافة متغيرات للمنتج</p>
+            <p className="text-sm text-gray-500 mb-4">
+              نوع المنتج الحالي: {selectedProductTypeWithSettings?.name || 'غير محدد'}
+            </p>
+            <p className="text-sm text-gray-500">
+              اختر نوع منتج يدعم المتغيرات لإضافة متغيرات للمنتج
+            </p>
+            {/* معلومات التشخيص الإضافية */}
+            <div className="mt-4 text-xs text-gray-400 bg-gray-100 p-3 rounded">
+              <div>معلومات التشخيص:</div>
+              <div>has_variants: {selectedProductTypeWithSettings?.has_variants?.toString() || 'غير محدد'}</div>
+              <div>settings.supports_variants: {selectedProductTypeWithSettings?.settings?.supports_variants?.toString() || 'غير محدد'}</div>
+              <div>نوع المنتج من المنتج: {product.product_type?.name || 'غير محدد'}</div>
+            </div>
           </div>
         )}
       </div>

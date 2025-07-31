@@ -412,14 +412,40 @@ export default function EditProductPage() {
   const loadSelectedProductType = async (productTypeId: string) => {
     try {
       logger.logDataLoad('Loading detailed product type', { productTypeId });
+      
+      // التحقق من وجود معرف نوع المنتج
+      if (!productTypeId) {
+        logger.logDataLoad('No product type ID provided');
+        setSelectedProductTypeWithSettings(null);
+        return;
+      }
+      
       const detailedProductType = await ProductTypeService.getProductType(productTypeId);
       logger.logDataLoad('Detailed product type loaded', { 
         productTypeId: detailedProductType.id,
         name: detailedProductType.name,
         hasSettings: !!detailedProductType.settings,
+        hasVariants: detailedProductType.has_variants,
         customFieldsCount: detailedProductType.settings?.custom_fields?.length || 0
       });
+      
+      // التحقق من البيانات المحملة
+      if (!detailedProductType) {
+        logger.logError('Product type data is null or undefined');
+        setSelectedProductTypeWithSettings(null);
+        return;
+      }
+      
       setSelectedProductTypeWithSettings(detailedProductType);
+      
+      // طباعة معلومات التشخيص
+      console.log('Product Type Details:', {
+        id: detailedProductType.id,
+        name: detailedProductType.name,
+        has_variants: detailedProductType.has_variants,
+        settings: detailedProductType.settings
+      });
+      
     } catch (err) {
       logger.logError('Failed to load detailed product type', err);
       console.error('Error loading detailed product type:', err);
@@ -456,10 +482,22 @@ export default function EditProductPage() {
   // تحميل نوع المنتج المحدد عند تغيير product_type
   useEffect(() => {
     if (formData.product_type) {
-      logger.logDataLoad('Product type changed, loading settings', { productTypeId: formData.product_type });
+      logger.logDataLoad('Product type changed, loading settings', { 
+        productTypeId: formData.product_type,
+        previousProductType: selectedProductTypeWithSettings?.id 
+      });
+      
+      // إعادة تعيين نوع المنتج المحدد قبل التحميل الجديد
+      setSelectedProductTypeWithSettings(null);
+      
+      // تحميل نوع المنتج الجديد
       loadSelectedProductType(formData.product_type);
+    } else {
+      // إذا لم يتم تحديد نوع منتج، إعادة تعيين البيانات
+      logger.logDataLoad('No product type selected, clearing settings');
+      setSelectedProductTypeWithSettings(null);
     }
-  }, [formData.product_type]);
+  }, [formData.product_type, selectedProductTypeWithSettings?.id]);
 
   const handleInputChange = (field: string, value: any) => {
     logger.log('Input change', { field, value, currentTab: activeTab });
@@ -544,15 +582,31 @@ export default function EditProductPage() {
   const handleTitleChange = (value: string) => {
     logger.log('Title change', { value, currentTab: activeTab });
     handleInputChange('title', value);
-    handleInputChange('slug', generateSlug(value));
+    // التأكد من أن القيمة نص قبل تمريرها إلى generateSlug
+    const titleString = typeof value === 'string' ? value : String(value || '');
+    handleInputChange('slug', generateSlug(titleString));
   };
 
   const getCategoryDisplayName = (category: Category) => {
-    return (category as any).display_name || category.name || 'غير محدد';
+    const name = category.name;
+    if (typeof name === 'string') {
+      return name;
+    }
+    if (name && typeof name === 'object' && 'ar' in name) {
+      return (name as any).ar;
+    }
+    return 'غير محدد';
   };
 
   const getProductTypeDisplayName = (productType: ProductType) => {
-    return (productType as any).display_name || productType.name || 'غير محدد';
+    const name = productType.name;
+    if (typeof name === 'string') {
+      return name;
+    }
+    if (name && typeof name === 'object' && 'ar' in name) {
+      return (name as any).ar;
+    }
+    return 'غير محدد';
   };
 
   // Debug panel
