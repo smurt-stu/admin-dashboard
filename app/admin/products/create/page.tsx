@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ProductService, CategoryService, ProductTypeService, ImageService } from '../../../../lib/products';
 import { Category, ProductType } from '../../../../lib/products/types';
 import { createProductData, validateMultilingualData, convertFormDataToAPI } from '../../../../lib/multilingualUtils';
+import { useToast, ProductToast } from '../../../../components/ui/toast';
 import ProductTabs from './components/ProductTabs';
 import BasicInfoTab from './components/BasicInfoTab';
 import DescriptionTab from './components/DescriptionTab';
@@ -81,6 +82,7 @@ interface ProductFormData {
 
 export default function CreateProductPage() {
   const router = useRouter();
+  const { showToast } = useToast();
   
   const [categories, setCategories] = useState<Category[]>([]);
   const [productTypes, setProductTypes] = useState<ProductType[]>([]);
@@ -153,10 +155,13 @@ export default function CreateProductPage() {
   const loadCategories = async () => {
     try {
       setLoading(true);
+      showToast(ProductToast.loadingData());
       const response = await CategoryService.getCategories({ is_active: true });
       setCategories(response?.results || []);
     } catch (err) {
-      setError('فشل في تحميل التصنيفات');
+      const errorMessage = 'فشل في تحميل التصنيفات';
+      setError(errorMessage);
+      showToast(ProductToast.productCreationFailed(errorMessage));
       console.error('Error loading categories:', err);
     } finally {
       setLoading(false);
@@ -218,6 +223,9 @@ export default function CreateProductPage() {
       setSaving(true);
       setError(null);
       
+      // إظهار رسالة الحفظ
+      showToast(ProductToast.savingChanges());
+      
       // معالجة البيانات
       
       // التحقق من صحة الحقول المخصصة إذا كانت موجودة
@@ -250,7 +258,9 @@ export default function CreateProductPage() {
         });
         
         if (customFieldErrors.length > 0) {
-          setError(`أخطاء في الحقول المخصصة:\n${customFieldErrors.join('\n')}`);
+          const errorMessage = `أخطاء في الحقول المخصصة:\n${customFieldErrors.join('\n')}`;
+          setError(errorMessage);
+          showToast(ProductToast.validationFailed(customFieldErrors));
           return;
         }
       }
@@ -265,7 +275,9 @@ export default function CreateProductPage() {
       // Validate multilingual data
       const validationErrors = validateMultilingualData(productData);
       if (validationErrors.length > 0) {
-        setError(`أخطاء في البيانات:\n${validationErrors.join('\n')}`);
+        const errorMessage = `أخطاء في البيانات:\n${validationErrors.join('\n')}`;
+        setError(errorMessage);
+        showToast(ProductToast.validationFailed(validationErrors));
         return;
       }
       
@@ -273,6 +285,10 @@ export default function CreateProductPage() {
       if (formData.main_image_file) {
         const result = await ImageService.uploadImageWithProduct(productData as any, formData.main_image_file);
         if (result.product?.id) {
+          // إظهار رسالة النجاح
+          const productName = formData.title || 'المنتج الجديد';
+          showToast(ProductToast.productCreated(productName));
+          
           // تحديث formData بـ id المنتج للسماح برفع الصور الإضافية
           setFormData(prev => ({
             ...prev,
@@ -282,7 +298,7 @@ export default function CreateProductPage() {
           // انتظار قليلاً ثم الانتقال إلى صفحة التعديل
           setTimeout(() => {
             router.push(`/admin/products/${result.product.id}`);
-          }, 1000);
+          }, 2000);
         } else {
           router.push('/admin/products');
         }
@@ -290,6 +306,10 @@ export default function CreateProductPage() {
         // الطريقة القديمة بدون صورة
         const response = await ProductService.createProduct(productData as any);
         if (response?.id) {
+          // إظهار رسالة النجاح
+          const productName = formData.title || 'المنتج الجديد';
+          showToast(ProductToast.productCreated(productName));
+          
           // تحديث formData بـ id المنتج للسماح برفع الصور
           setFormData(prev => ({
             ...prev,
@@ -299,7 +319,7 @@ export default function CreateProductPage() {
           // انتظار قليلاً ثم الانتقال إلى صفحة التعديل
           setTimeout(() => {
             router.push(`/admin/products/${response.id}`);
-          }, 1000);
+          }, 2000);
         } else {
           router.push('/admin/products');
         }
@@ -307,6 +327,7 @@ export default function CreateProductPage() {
     } catch (err: any) {
       const errorMessage = err.message || 'حدث خطأ غير متوقع';
       setError(`فشل في إنشاء المنتج: ${errorMessage}`);
+      showToast(ProductToast.productCreationFailed(errorMessage));
       console.error('Error creating product:', err);
     } finally {
       setSaving(false);

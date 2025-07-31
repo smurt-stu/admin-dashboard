@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ProductService, CategoryService, Product, Category, PaginatedResponse } from '../../../lib/products';
+import { useToast, ProductToast } from '../../../components/ui/toast';
 
 interface ProductFilters {
   search: string;
@@ -17,6 +18,7 @@ interface ProductFilters {
 type ViewMode = 'table' | 'cards';
 
 export default function ProductsPage() {
+  const { showToast } = useToast();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -43,6 +45,7 @@ export default function ProductsPage() {
   const loadProducts = async () => {
     try {
       setLoading(true);
+      showToast(ProductToast.loadingData());
       const params: any = {
         page: filters.page,
         page_size: 20,
@@ -59,9 +62,11 @@ export default function ProductsPage() {
       setTotalCount(response?.pagination?.total_count || 0);
       setError(null);
     } catch (err) {
-      setError('فشل في تحميل المنتجات');
+      const errorMessage = 'فشل في تحميل المنتجات';
+      setError(errorMessage);
       setProducts([]);
       setTotalCount(0);
+      showToast(ProductToast.productCreationFailed(errorMessage));
       console.error('Error loading products:', err);
     } finally {
       setLoading(false);
@@ -113,11 +118,20 @@ export default function ProductsPage() {
   const handleDeleteProduct = async (productId: string) => {
     if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
       try {
+        showToast(ProductToast.savingChanges());
         await ProductService.deleteProduct(productId);
+        
+        // البحث عن اسم المنتج المحذوف
+        const deletedProduct = products.find(p => p.id === productId);
+        const productName = deletedProduct ? getProductTitle(deletedProduct.title) : 'المنتج';
+        
+        showToast(ProductToast.productDeleted(productName));
         loadProducts();
         setSelectedProducts(prev => prev.filter(id => id !== productId));
-      } catch (err) {
-        alert('فشل في حذف المنتج');
+      } catch (err: any) {
+        const errorMessage = err.message || 'فشل في حذف المنتج';
+        showToast(ProductToast.productDeleteFailed(errorMessage));
+        console.error('Error deleting product:', err);
       }
     }
   };
@@ -128,11 +142,16 @@ export default function ProductsPage() {
     
     if (confirm(`هل أنت متأكد من حذف ${selectedArray.length} منتج؟`)) {
       try {
+        showToast(ProductToast.savingChanges());
         await Promise.all(selectedArray.map(id => ProductService.deleteProduct(id)));
+        
+        showToast(ProductToast.productDeleted(`${selectedArray.length} منتج`));
         loadProducts();
         setSelectedProducts([]);
-      } catch (err) {
-        alert('فشل في حذف المنتجات');
+      } catch (err: any) {
+        const errorMessage = err.message || 'فشل في حذف المنتجات';
+        showToast(ProductToast.productDeleteFailed(errorMessage));
+        console.error('Error deleting products:', err);
       }
     }
   };

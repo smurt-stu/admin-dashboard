@@ -3,6 +3,7 @@
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { usePathname } from 'next/navigation';
+import { ToastProvider } from '../components/ui/toast';
 
 export default function LayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -10,19 +11,21 @@ export default function LayoutContent({ children }: { children: React.ReactNode 
 
   if (isAdminPage) {
     return (
-      <main className="min-h-screen">
-        {children}
-      </main>
+      <ToastProvider>
+        <main className="min-h-screen">
+          {children}
+        </main>
+      </ToastProvider>
     );
   }
 
   return (
-    <>
+    <ToastProvider>
       <Header />
       <main className="min-h-screen">
         {children}
       </main>
       <Footer />
-    </>
+    </ToastProvider>
   );
 } 

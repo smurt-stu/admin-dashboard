@@ -4,11 +4,13 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ProductService, CategoryService, Product, Category } from '../../../../lib/productService';
+import { useToast, ProductToast } from '../../../../components/ui/toast';
 
 export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
   const productId = params.id as string;
+  const { showToast } = useToast();
   
   const [product, setProduct] = useState<Product | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -27,11 +29,14 @@ export default function ProductDetailPage() {
   const loadProduct = async () => {
     try {
       setLoading(true);
+      showToast(ProductToast.loadingData());
       const response = await ProductService.getProduct(productId);
       setProduct(response || null);
       setError(null);
     } catch (err) {
-      setError('فشل في تحميل تفاصيل المنتج');
+      const errorMessage = 'فشل في تحميل تفاصيل المنتج';
+      setError(errorMessage);
+      showToast(ProductToast.productUpdateFailed(errorMessage));
       console.error('Error loading product:', err);
     } finally {
       setLoading(false);
@@ -53,10 +58,20 @@ export default function ProductDetailPage() {
     if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
       try {
         setDeleting(true);
+        showToast(ProductToast.savingChanges());
         await ProductService.deleteProduct(product.id);
-        router.push('/admin/products');
-      } catch (err) {
-        alert('فشل في حذف المنتج');
+        
+        // إظهار رسالة النجاح
+        const productName = getProductTitle(product.title);
+        showToast(ProductToast.productDeleted(productName));
+        
+        // انتظار قليلاً ثم الانتقال
+        setTimeout(() => {
+          router.push('/admin/products');
+        }, 2000);
+      } catch (err: any) {
+        const errorMessage = err.message || 'فشل في حذف المنتج';
+        showToast(ProductToast.productDeleteFailed(errorMessage));
         console.error('Error deleting product:', err);
       } finally {
         setDeleting(false);

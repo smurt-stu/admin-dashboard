@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ProductService, CategoryService, ProductTypeService, Product, Category, ProductType } from '../../../../../lib/products';
 import { createProductData, validateMultilingualData, convertAPIToFormData } from '../../../../../lib/multilingualUtils';
+import { useToast, ProductToast } from '../../../../../components/ui/toast';
 
 // Import components
 import EditProductTabs from './components/EditProductTabs';
@@ -155,6 +156,7 @@ export default function EditProductPage() {
   const params = useParams();
   const router = useRouter();
   const productId = params.id as string;
+  const { showToast } = useToast();
   
   const [product, setProduct] = useState<Product | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -249,6 +251,9 @@ export default function EditProductPage() {
       setLoading(true);
       setError(null);
       
+      // إظهار رسالة التحميل
+      showToast(ProductToast.loadingData());
+      
       // تحميل المنتج
       logger.logDataLoad('Fetching product data');
       const productData = await ProductService.getProduct(productId);
@@ -291,6 +296,7 @@ export default function EditProductPage() {
       const errorMessage = err.message || 'فشل في تحميل المنتج';
       logger.logError('Product load failed', err);
       setError(errorMessage);
+      showToast(ProductToast.productUpdateFailed(errorMessage));
       console.error('Error loading product:', err);
     } finally {
       setLoading(false);
@@ -479,6 +485,9 @@ export default function EditProductPage() {
       setSaving(true);
       setError(null);
       
+      // إظهار رسالة الحفظ
+      showToast(ProductToast.savingChanges());
+      
       // Create product data according to API guide
       logger.logDataLoad('Creating product data');
       const productData = createProductData(formData);
@@ -488,7 +497,9 @@ export default function EditProductPage() {
       const validationErrors = validateMultilingualData(productData);
       if (validationErrors.length > 0) {
         logger.logError('Validation failed', { errors: validationErrors });
-        setError(`أخطاء في البيانات:\n${validationErrors.join('\n')}`);
+        const errorMessage = `أخطاء في البيانات:\n${validationErrors.join('\n')}`;
+        setError(errorMessage);
+        showToast(ProductToast.validationFailed(validationErrors));
         return;
       }
       
@@ -499,8 +510,15 @@ export default function EditProductPage() {
       const response = await ProductService.updateProduct(productId, productData as any, originalProductData);
       logger.logDataLoad('Product updated successfully', { responseId: response?.id });
       
+      // إظهار رسالة النجاح
+      const productName = formData.title || product?.title || 'المنتج';
+      showToast(ProductToast.productUpdated(productName));
+      
       if (response?.id) {
-        router.push(`/admin/products/${response.id}`);
+        // انتظار قليلاً ثم الانتقال
+        setTimeout(() => {
+          router.push(`/admin/products/${response.id}`);
+        }, 2000);
       } else {
         router.push('/admin/products');
       }
@@ -508,6 +526,7 @@ export default function EditProductPage() {
       const errorMessage = err.message || 'حدث خطأ غير متوقع';
       logger.logError('Form submission failed', err);
       setError(`فشل في تحديث المنتج: ${errorMessage}`);
+      showToast(ProductToast.productUpdateFailed(errorMessage));
       console.error('Error updating product:', err);
     } finally {
       setSaving(false);
