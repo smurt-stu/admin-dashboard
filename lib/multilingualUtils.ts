@@ -284,7 +284,7 @@ export function createProductData(formData: any): any {
     price: parseFloat(formData.price || "0.00").toString(),
     compare_price: formData.compare_price ? parseFloat(formData.compare_price).toString() : undefined,
     cost_price: formData.cost_price ? parseFloat(formData.cost_price).toString() : undefined,
-    discount_percentage: formData.discount_percentage || undefined,
+    discount_percentage: formData.discount_percentage !== undefined ? parseFloat(formData.discount_percentage).toString() : undefined,
     
     // === معلومات المنتج التقني ===
     sku: formData.sku || undefined,

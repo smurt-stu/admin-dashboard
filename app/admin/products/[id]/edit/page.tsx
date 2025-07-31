@@ -356,7 +356,7 @@ export default function EditProductPage() {
       warranty_period: productData.warranty_period || 12,
       warranty_type: productData.warranty_type || '',
       condition: productData.condition || 'new',
-      in_stock: productData.in_stock || false,
+      in_stock: (productData as any).is_in_stock || productData.in_stock || false,
       is_featured: productData.is_featured || false,
       is_bestseller: productData.is_bestseller || false,
       is_new_arrival: productData.is_new_arrival || false,
@@ -412,7 +412,11 @@ export default function EditProductPage() {
       title: converted.title,
       category: converted.category,
       product_type: converted.product_type,
-      customFieldsCount: Object.keys(converted.custom_fields_data).length
+      customFieldsCount: Object.keys(converted.custom_fields_data).length,
+      costPrice: converted.cost_price,
+      discountPercentage: converted.discount_percentage,
+      weight: converted.weight,
+      dimensions: converted.dimensions
     });
     
     return converted;
@@ -549,6 +553,9 @@ export default function EditProductPage() {
       // Create product data according to API guide
       logger.logDataLoad('Creating product data');
       const productData = createProductData(formDataWithVariants);
+      
+      // طباعة تشخيصية للبيانات المرسلة
+      console.log('Product data being sent:', JSON.stringify(productData, null, 2));
       
       // Validate multilingual data
       logger.logDataLoad('Validating multilingual data');
