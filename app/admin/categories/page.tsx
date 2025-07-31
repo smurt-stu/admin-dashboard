@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { CategoryService } from '../../../lib/products';
 import { Category } from '../../../lib/products/types';
 
-interface CategoryWithStats extends Omit<Category, 'name' | 'description'> {
+interface CategoryWithStats extends Omit<Category, 'name' | 'description' | 'products_count'> {
   name: string | {
     ar: string;
     en: string;
@@ -80,11 +80,15 @@ export default function CategoriesManagementPage() {
     setShowViewModal(true);
   };
 
-  const filteredCategories = categories.filter(category => 
-    category.name?.ar?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    category.name?.en?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    category.slug?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredCategories = categories.filter(category => {
+    const nameAr = typeof category.name === 'string' ? category.name : category.name?.ar || '';
+    const nameEn = typeof category.name === 'string' ? category.name : category.name?.en || '';
+    return (
+      nameAr.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      nameEn.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      category.slug?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
 
   const getCategoryIcon = (category: CategoryWithStats) => {
     return category.icon || 'ri-folder-line';

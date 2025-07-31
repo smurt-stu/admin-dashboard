@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { ImageService } from '../../../lib/products/imageService';
+import { ImageService } from '../../../lib/products';
 import { validateImageFile } from '../../../lib/products/utils';
 
 export default function TestImageUploadPage() {

@@ -70,10 +70,11 @@ export default function CreateCategoryPage() {
   const handleInputChange = (field: string, value: any, lang?: string) => {
     setFormData(prev => {
       if (lang) {
+        const currentValue = prev[field as keyof CategoryFormData];
         return {
           ...prev,
           [field]: {
-            ...prev[field as keyof CategoryFormData],
+            ...(typeof currentValue === 'object' && currentValue !== null ? currentValue : {}),
             [lang]: value
           }
         };
@@ -135,7 +136,7 @@ export default function CreateCategoryPage() {
           ar: formData.description.ar || '',
           en: formData.description.en || ''
         },
-        parent: formData.parent || null,
+        parent: formData.parent ? { id: formData.parent } as Category : undefined,
         icon: formData.icon,
         display_order: formData.display_order,
         meta_title: {

@@ -44,7 +44,7 @@ export default function ProductTypeDetailsPage() {
       
       setProductType({
         ...productTypeData,
-        statistics
+        statistics: statistics || undefined
       });
     } catch (err: any) {
       setError(`فشل في تحميل تفاصيل نوع المنتج: ${err.message}`);

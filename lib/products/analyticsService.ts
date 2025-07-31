@@ -44,7 +44,7 @@ export class AnalyticsService {
   
   static async getProductPerformance(productId: number, dateFrom?: string, dateTo?: string): Promise<Analytics[]> {
     const params: AnalyticsFilters = {
-      product: productId,
+      product: productId.toString(),
       date_from: dateFrom,
       date_to: dateTo
     };

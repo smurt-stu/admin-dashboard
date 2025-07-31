@@ -7,10 +7,40 @@ import { OrderStatusChart } from './components/OrderStatusChart';
 import { TopProducts } from './components/TopProducts';
 import { CustomerInsights } from './components/CustomerInsights';
 
+interface AnalyticsData {
+  total_orders: number;
+  total_revenue: number;
+  average_order_value: number;
+  conversion_rate: number;
+  orders_by_status: {
+    pending: number;
+    confirmed: number;
+    shipped: number;
+    delivered: number;
+    cancelled: number;
+  };
+  revenue_by_month: Array<{
+    month: string;
+    revenue: number;
+  }>;
+  top_products: Array<{
+    name: string;
+    quantity: number;
+    revenue: number;
+  }>;
+  customer_insights: {
+    new_customers: number;
+    returning_customers: number;
+    average_customer_value: number;
+  };
+  revenue_data?: any;
+  status_data?: any;
+}
+
 export default function OrderAnalyticsPage() {
   const [dateRange, setDateRange] = useState('month');
   const [loading, setLoading] = useState(true);
-  const [analytics, setAnalytics] = useState(null);
+  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
 
   useEffect(() => {
     fetchAnalytics();
@@ -94,8 +124,8 @@ export default function OrderAnalyticsPage() {
 
       {/* Additional Insights */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <TopProducts data={analytics?.top_products} />
-        <CustomerInsights data={analytics?.customer_insights} />
+        <TopProducts data={analytics?.top_products || null} />
+        <CustomerInsights data={analytics?.customer_insights || null} />
       </div>
     </div>
   );

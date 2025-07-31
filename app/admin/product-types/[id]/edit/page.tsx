@@ -6,19 +6,7 @@ import Link from 'next/link';
 import { ProductTypeService } from '../../../../../lib/products';
 import { ProductType } from '../../../../../lib/products/types';
 
-interface CustomField {
-  name: string;
-  label: {
-    ar: string;
-    en: string;
-  };
-  type: 'text' | 'number' | 'boolean' | 'select' | 'color' | 'date' | 'url' | 'email' | 'phone' | 'json';
-  required: boolean;
-  searchable: boolean;
-  filterable: boolean;
-  options?: string[];
-  default_value?: any;
-}
+import { CustomField } from '../../../../../lib/products/types';
 
 interface ProductTypeFormData {
   name: string;
@@ -109,10 +97,11 @@ export default function EditProductTypePage() {
   const handleInputChange = (field: string, value: any, lang?: string) => {
     setFormData(prev => {
       if (lang) {
+        const currentValue = prev[field as keyof ProductTypeFormData];
         return {
           ...prev,
           [field]: {
-            ...prev[field as keyof ProductTypeFormData],
+            ...(typeof currentValue === 'object' && currentValue !== null ? currentValue : {}),
             [lang]: value
           }
         };

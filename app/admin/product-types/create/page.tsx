@@ -63,10 +63,11 @@ export default function CreateProductTypePage() {
   const handleInputChange = (field: string, value: any, lang?: string) => {
     setFormData(prev => {
       if (lang) {
+        const currentValue = prev[field as keyof ProductTypeFormData];
         return {
           ...prev,
           [field]: {
-            ...prev[field as keyof ProductTypeFormData],
+            ...(typeof currentValue === 'object' && currentValue !== null ? currentValue : {}),
             [lang]: value
           }
         };

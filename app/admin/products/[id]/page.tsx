@@ -536,7 +536,12 @@ export default function ProductDetailPage() {
                         />
                         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 rounded-lg flex items-center justify-center">
                           <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-white text-center">
-                            <p className="text-sm font-medium">{image.caption}</p>
+                            <p className="text-sm font-medium">
+                              {typeof image.caption === 'string' 
+                                ? image.caption 
+                                : image.caption?.ar || image.caption?.en || 'صورة المنتج'
+                              }
+                            </p>
                             <p className="text-xs">{image.image_type}</p>
                           </div>
                         </div>

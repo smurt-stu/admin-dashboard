@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ProductTypeService } from '../../../lib/products';
 import { ProductType } from '../../../lib/products/types';
 
-interface ProductTypeWithStats extends Omit<ProductType, 'products_count'> {
+interface ProductTypeWithStats extends Omit<ProductType, 'products_count' | 'is_active'> {
   products_count?: number;
   is_active?: boolean;
 }

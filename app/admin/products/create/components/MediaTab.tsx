@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { ImageService } from '../../../../../lib/products/imageService';
+import { ImageService } from '../../../../../lib/products';
 import { validateImageFile } from '../../../../../lib/products/utils';
 import FileUpload from '../../../components/FileUpload';
 import ImagePreview from '../../../components/ImagePreview';
@@ -30,7 +30,7 @@ export default function MediaTab({ formData, setFormData, productType }: MediaTa
   };
 
   // رفع الصورة الرئيسية أثناء إنشاء المنتج
-  const handleMainImageUpload = (files: FileList | null) => {
+  const handleMainImageUpload = (files: File[]) => {
     if (!files || files.length === 0) return;
     
     const file = files[0];
@@ -51,7 +51,7 @@ export default function MediaTab({ formData, setFormData, productType }: MediaTa
   };
 
   // رفع الصور للمنتج
-  const handleImageUpload = async (files: FileList | null) => {
+  const handleImageUpload = async (files: File[]) => {
     if (!files || files.length === 0) return;
     
     // التحقق من وجود معرف المنتج

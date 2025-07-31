@@ -17,6 +17,7 @@ export interface ProductType {
   track_stock: boolean;
   has_variants: boolean;
   template_name?: string;
+  is_active: boolean;
   settings: {
     size_options?: string[];
     color_options?: string[];
