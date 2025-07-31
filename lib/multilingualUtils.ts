@@ -206,6 +206,11 @@ function removeEmptyFields(data: any): any {
       delete cleaned[key];
     } else if (Array.isArray(cleaned[key]) && cleaned[key].length === 0) {
       delete cleaned[key];
+    } else if (key === 'variants_data' && Array.isArray(cleaned[key]) && cleaned[key].length === 0) {
+      console.log('Removing empty variants_data array');
+      delete cleaned[key];
+    } else if (key === 'variants_data' && Array.isArray(cleaned[key]) && cleaned[key].length > 0) {
+      console.log('Keeping variants_data array with length:', cleaned[key].length);
     } else if (typeof cleaned[key] === 'object' && cleaned[key] !== null) {
       cleaned[key] = removeEmptyFields(cleaned[key]);
       if (Object.keys(cleaned[key]).length === 0) {
@@ -213,6 +218,13 @@ function removeEmptyFields(data: any): any {
       }
     }
   });
+  
+  // طباعة تشخيصية للمتغيرات
+  if (cleaned.variants_data) {
+    console.log('Variants data survived cleaning:', cleaned.variants_data);
+  } else {
+    console.log('Variants data was removed during cleaning');
+  }
   
   return cleaned;
 }
@@ -440,6 +452,13 @@ export function createProductData(formData: any): any {
   }
   
   // إضافة المتغيرات الموجودة في formData
+  console.log('Checking for variants in formData:', {
+    hasVariants: !!formData.variants,
+    isArray: Array.isArray(formData.variants),
+    length: formData.variants?.length,
+    variants: formData.variants
+  });
+  
   if (formData.variants && Array.isArray(formData.variants) && formData.variants.length > 0) {
     // تحويل المتغيرات إلى التنسيق المطلوب من الباكند
     const formattedVariants = formData.variants.map((variant: any, index: number) => ({
@@ -469,6 +488,8 @@ export function createProductData(formData: any): any {
     
     productData.variants_data = formattedVariants;
     console.log('Formatted variants being sent:', formattedVariants);
+  } else {
+    console.log('No variants found in formData or variants array is empty');
   }
   
   // إزالة الحقول الفارغة
@@ -481,7 +502,8 @@ export function createProductData(formData: any): any {
     discount_percentage: formData.discount_percentage,
     weight: formData.weight,
     dimensions: formData.dimensions,
-    custom_fields_data: formData.custom_fields_data
+    custom_fields_data: formData.custom_fields_data,
+    variants: formData.variants
   });
   
   return cleanedData;

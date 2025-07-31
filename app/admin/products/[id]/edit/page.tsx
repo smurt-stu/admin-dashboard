@@ -408,6 +408,8 @@ export default function EditProductPage() {
       variants: (productData as any).variants || []
     };
     
+    console.log('Converted form data variants:', converted.variants);
+    
     logger.logDataLoad('Form data conversion completed', { 
       title: converted.title,
       category: converted.category,
@@ -512,6 +514,9 @@ export default function EditProductPage() {
 
   const handleInputChange = (field: string, value: any) => {
     logger.log('Input change', { field, value, currentTab: activeTab });
+    if (field === 'variants') {
+      console.log('Variants being updated in formData:', value);
+    }
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -547,7 +552,8 @@ export default function EditProductPage() {
       console.log('Form data with variants:', {
         has_variants: formDataWithVariants.has_variants,
         selectedProductTypeWithSettings: selectedProductTypeWithSettings,
-        custom_fields_data: formDataWithVariants.custom_fields_data
+        custom_fields_data: formDataWithVariants.custom_fields_data,
+        variants: formDataWithVariants.variants
       });
       
       // Create product data according to API guide
@@ -555,6 +561,7 @@ export default function EditProductPage() {
       const productData = createProductData(formDataWithVariants);
       
       // طباعة تشخيصية للبيانات المرسلة
+      console.log('Form data variants:', formDataWithVariants.variants);
       console.log('Product data being sent:', JSON.stringify(productData, null, 2));
       
       // Validate multilingual data

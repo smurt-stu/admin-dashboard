@@ -75,6 +75,7 @@ export default function VariantsTab({ product, formData, handleInputChange, sele
         is_active: variant.is_active !== false
       }));
       
+      console.log('Updating formData with variants:', formattedVariants);
       handleInputChange('variants', formattedVariants);
       previousVariantsRef.current = [...variants];
     }

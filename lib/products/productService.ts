@@ -43,6 +43,11 @@ function getChangedFields(originalData: Partial<Product>, newData: Partial<Produ
     }
   }
   
+  console.log('Changed fields detected:', Object.keys(changedFields));
+  if (changedFields.variants_data) {
+    console.log('Variants data is being sent as changed field');
+  }
+  
   return changedFields;
 }
 
@@ -96,6 +101,8 @@ export class ProductService {
       updateData = getChangedFields(originalData, data);
       console.log('Changed fields only:', updateData);
     }
+    
+    console.log('Sending update data to API:', JSON.stringify(updateData, null, 2));
     
     const response = await fetch(
       `${BASE_URL}/store/products/products/${id}/`,
