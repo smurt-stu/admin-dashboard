@@ -6,11 +6,14 @@
   "framework": "nextjs",
   "env": {
     "NODE_ENV": "production",
-    "SKIP_TYPE_CHECK": "true"
+    "SKIP_TYPE_CHECK": "true",
+    "NEXT_TELEMETRY_DISABLED": "1"
   },
   "build": {
     "env": {
-      "NODE_ENV": "production"
+      "NODE_ENV": "production",
+      "SKIP_TYPE_CHECK": "true",
+      "NEXT_TELEMETRY_DISABLED": "1"
     }
   },
   "headers": [
