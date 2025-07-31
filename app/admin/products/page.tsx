@@ -56,7 +56,7 @@ export default function ProductsPage() {
 
       const response: PaginatedResponse<Product> = await ProductService.getProducts(params);
       setProducts(response?.results || []);
-      setTotalCount(response?.count || 0);
+      setTotalCount(response?.pagination?.total_count || 0);
       setError(null);
     } catch (err) {
       setError('فشل في تحميل المنتجات');
@@ -182,15 +182,15 @@ export default function ProductsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">إدارة المنتجات</h1>
+          <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">إدارة المنتجات</h1>
           <p className="text-gray-600 mt-1">({totalCount} منتج)</p>
         </div>
-        <div className="flex space-x-3 rtl:space-x-reverse">
+        <div className="flex flex-wrap gap-2">
           <Link
             href="/admin/products/create"
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 rtl:space-x-reverse cursor-pointer transition-colors"
+            className="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2 cursor-pointer transition-colors text-sm"
           >
             <i className="ri-add-line"></i>
             <span>إضافة منتج جديد</span>
@@ -198,7 +198,7 @@ export default function ProductsPage() {
           
           <Link
             href="/admin/categories"
-            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center space-x-2 rtl:space-x-reverse cursor-pointer transition-colors"
+            className="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2 cursor-pointer transition-colors text-sm"
           >
             <i className="ri-folder-line"></i>
             <span>إدارة الفئات</span>
@@ -206,7 +206,7 @@ export default function ProductsPage() {
           
           <Link
             href="/admin/product-types"
-            className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 flex items-center space-x-2 rtl:space-x-reverse cursor-pointer transition-colors"
+            className="bg-purple-600 text-white px-3 py-2 rounded-lg hover:bg-purple-700 flex items-center gap-2 cursor-pointer transition-colors text-sm"
           >
             <i className="ri-settings-3-line"></i>
             <span>أنواع المنتجات</span>
@@ -215,7 +215,7 @@ export default function ProductsPage() {
           {selectedArray.length > 0 && (
             <button
               onClick={handleBulkDelete}
-              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 flex items-center space-x-2 rtl:space-x-reverse transition-colors"
+              className="bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 flex items-center gap-2 transition-colors text-sm"
             >
               <i className="ri-delete-bin-line"></i>
               <span>حذف المحدد ({selectedArray.length})</span>
@@ -225,7 +225,7 @@ export default function ProductsPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
           <div className="flex items-center">
             <div className="p-2 bg-blue-100 rounded-lg">
@@ -282,9 +282,9 @@ export default function ProductsPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+      <div className="bg-white p-4 lg:p-6 rounded-lg shadow-sm border border-gray-200">
         <form onSubmit={handleSearch} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* البحث */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -356,11 +356,11 @@ export default function ProductsPage() {
             </div>
           </div>
 
-          <div className="flex justify-between items-center">
-            <div className="flex space-x-3 rtl:space-x-reverse">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+            <div className="flex flex-wrap gap-2">
               <button
                 type="submit"
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 rtl:space-x-reverse"
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
               >
                 <i className="ri-search-line"></i>
                 <span>بحث</span>
@@ -382,7 +382,7 @@ export default function ProductsPage() {
             </div>
 
             {/* View Mode Toggle */}
-            <div className="flex items-center space-x-2 rtl:space-x-reverse">
+            <div className="flex items-center gap-2">
               <span className="text-sm text-gray-600">عرض:</span>
               <div className="flex bg-gray-100 rounded-lg p-1">
                 <button
@@ -540,7 +540,7 @@ export default function ProductsPage() {
   );
 }
 
-// Table View Component
+// Table View Component - Improved Responsive Design
 function TableView({ 
   products, 
   selectedProducts, 
@@ -564,148 +564,163 @@ function TableView({
 }) {
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-              <input
-                type="checkbox"
-                checked={selectedProducts.length === products.length && products.length > 0}
-                onChange={onSelectAll}
-                className="rounded border-gray-300 focus:ring-blue-500"
-              />
-            </th>
-            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-              المنتج
-            </th>
-            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-              التصنيف
-            </th>
-            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-              السعر
-            </th>
-            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-              المخزون
-            </th>
-            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-              الحالة
-            </th>
-            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-              تاريخ الإنشاء
-            </th>
-            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-              العمليات
-            </th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {products.map((product) => {
-            const stockStatus = getStockStatus(product.in_stock);
-            return (
-              <tr key={product.id} className="hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-4 whitespace-nowrap">
+      <div className="min-w-full inline-block align-middle">
+        <div className="overflow-hidden border border-gray-200 rounded-lg">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                   <input
                     type="checkbox"
-                    checked={selectedProducts.includes(product.id)}
-                    onChange={() => onSelectProduct(product.id)}
+                    checked={selectedProducts.length === products.length && products.length > 0}
+                    onChange={onSelectAll}
                     className="rounded border-gray-300 focus:ring-blue-500"
                   />
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0 h-12 w-12">
-                      {product.main_image ? (
-                        <img
-                          className="h-12 w-12 rounded-lg object-cover border border-gray-200"
-                          src={product.main_image}
-                          alt={getProductTitle(product.title)}
-                        />
-                      ) : (
-                        <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center border border-gray-200">
-                          <i className="ri-image-line text-gray-400"></i>
-                        </div>
-                      )}
-                    </div>
-                    <div className="mr-4">
-                      <div className="text-sm font-medium text-gray-900">
-                        {getProductTitle(product.title)}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        ID: {product.id.slice(0, 8)}...
-                      </div>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                    {getCategoryName(product.category_name)}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  <span className="font-semibold text-blue-600">
-                    {formatPrice(product.price)}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${stockStatus.color}`}>
-                    <i className={`ri-${stockStatus.text === 'متوفر' ? 'check' : 'close'}-line ml-1`}></i>
-                    {stockStatus.text}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex space-x-1 rtl:space-x-reverse">
-                    {product.is_featured && (
-                      <span className="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
-                        <i className="ri-star-fill ml-1"></i>
-                        مميز
-                      </span>
-                    )}
-                    {product.is_bestseller && (
-                      <span className="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">
-                        <i className="ri-fire-fill ml-1"></i>
-                        مبيعات عالية
-                      </span>
-                    )}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {new Date(product.created_at).toLocaleDateString('ar-SA')}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <div className="flex space-x-2 rtl:space-x-reverse">
-                    <Link
-                      href={`/admin/products/${product.id}`}
-                      className="text-blue-600 hover:text-blue-700 p-1 rounded hover:bg-blue-50 transition-colors"
-                      title="عرض"
-                    >
-                      <i className="ri-eye-line"></i>
-                    </Link>
-                    <Link
-                      href={`/admin/products/${product.id}/edit`}
-                      className="text-green-600 hover:text-green-700 p-1 rounded hover:bg-green-50 transition-colors"
-                      title="تعديل"
-                    >
-                      <i className="ri-edit-line"></i>
-                    </Link>
-                    <button
-                      onClick={() => onDeleteProduct(product.id)}
-                      className="text-red-600 hover:text-red-700 p-1 rounded hover:bg-red-50 transition-colors"
-                      title="حذف"
-                    >
-                      <i className="ri-delete-bin-line"></i>
-                    </button>
-                  </div>
-                </td>
+                </th>
+                <th className="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  المنتج
+                </th>
+                <th className="hidden sm:table-cell px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  التصنيف
+                </th>
+                <th className="hidden md:table-cell px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  السعر
+                </th>
+                <th className="hidden lg:table-cell px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  المخزون
+                </th>
+                <th className="hidden xl:table-cell px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  الحالة
+                </th>
+                <th className="hidden 2xl:table-cell px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  تاريخ الإنشاء
+                </th>
+                <th className="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  العمليات
+                </th>
               </tr>
-            );
-          })}
-        </tbody>
-      </table>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {products.map((product) => {
+                const stockStatus = getStockStatus(product.in_stock);
+                return (
+                  <tr key={product.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                      <input
+                        type="checkbox"
+                        checked={selectedProducts.includes(product.id)}
+                        onChange={() => onSelectProduct(product.id)}
+                        className="rounded border-gray-300 focus:ring-blue-500"
+                      />
+                    </td>
+                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 h-10 w-10 sm:h-12 sm:w-12">
+                          {product.main_image ? (
+                            <img
+                              className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg object-cover border border-gray-200"
+                              src={product.main_image}
+                              alt={getProductTitle(product.title)}
+                            />
+                          ) : (
+                            <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center border border-gray-200">
+                              <i className="ri-image-line text-gray-400 text-sm sm:text-base"></i>
+                            </div>
+                          )}
+                        </div>
+                        <div className="mr-3 min-w-0 flex-1">
+                          <div className="text-sm font-medium text-gray-900 truncate">
+                            {getProductTitle(product.title)}
+                          </div>
+                          <div className="text-xs text-gray-500 truncate">
+                            ID: {product.id.slice(0, 8)}...
+                          </div>
+                          {/* Mobile-only info */}
+                          <div className="sm:hidden text-xs text-gray-500 mt-1">
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold text-blue-600">
+                                {formatPrice(product.price)}
+                              </span>
+                              <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium ${stockStatus.color}`}>
+                                {stockStatus.text}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="hidden sm:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                        {getCategoryName(product.category)}
+                      </span>
+                    </td>
+                    <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <span className="font-semibold text-blue-600">
+                        {formatPrice(product.price)}
+                      </span>
+                    </td>
+                    <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${stockStatus.color}`}>
+                        <i className={`ri-${stockStatus.text === 'متوفر' ? 'check' : 'close'}-line ml-1`}></i>
+                        {stockStatus.text}
+                      </span>
+                    </td>
+                    <td className="hidden xl:table-cell px-6 py-4 whitespace-nowrap">
+                      <div className="flex flex-col gap-1">
+                        {product.is_featured && (
+                          <span className="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
+                            <i className="ri-star-fill ml-1"></i>
+                            مميز
+                          </span>
+                        )}
+                        {product.is_bestseller && (
+                          <span className="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">
+                            <i className="ri-fire-fill ml-1"></i>
+                            مبيعات عالية
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="hidden 2xl:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {new Date(product.created_at).toLocaleDateString('ar-SA')}
+                    </td>
+                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex items-center gap-1 sm:gap-2">
+                        <Link
+                          href={`/admin/products/${product.id}`}
+                          className="text-blue-600 hover:text-blue-700 p-1 sm:p-2 rounded hover:bg-blue-50 transition-colors"
+                          title="عرض"
+                        >
+                          <i className="ri-eye-line text-sm sm:text-base"></i>
+                        </Link>
+                        <Link
+                          href={`/admin/products/${product.id}/edit`}
+                          className="text-green-600 hover:text-green-700 p-1 sm:p-2 rounded hover:bg-green-50 transition-colors"
+                          title="تعديل"
+                        >
+                          <i className="ri-edit-line text-sm sm:text-base"></i>
+                        </Link>
+                        <button
+                          onClick={() => onDeleteProduct(product.id)}
+                          className="text-red-600 hover:text-red-700 p-1 sm:p-2 rounded hover:bg-red-50 transition-colors"
+                          title="حذف"
+                        >
+                          <i className="ri-delete-bin-line text-sm sm:text-base"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }
 
-// Cards View Component
+// Cards View Component - Improved Responsive Design
 function CardsView({ 
   products, 
   selectedProducts, 
@@ -726,8 +741,8 @@ function CardsView({
   getStockStatus: (inStock: boolean) => { color: string; text: string };
 }) {
   return (
-    <div className="p-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+    <div className="p-4 lg:p-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 lg:gap-6">
         {products.map((product) => {
           const stockStatus = getStockStatus(product.in_stock);
           return (
@@ -737,18 +752,18 @@ function CardsView({
                 <div className="relative overflow-hidden rounded-t-xl">
                   {product.main_image ? (
                     <img
-                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-40 sm:h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                       src={product.main_image}
                       alt={getProductTitle(product.title)}
                     />
                   ) : (
-                    <div className="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-t-xl flex items-center justify-center">
-                      <i className="ri-image-line text-gray-400 text-4xl"></i>
+                    <div className="w-full h-40 sm:h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-t-xl flex items-center justify-center">
+                      <i className="ri-image-line text-gray-400 text-3xl sm:text-4xl"></i>
                     </div>
                   )}
                   
                   {/* Checkbox */}
-                  <div className="absolute top-3 right-3">
+                  <div className="absolute top-2 right-2 sm:top-3 sm:right-3">
                     <input
                       type="checkbox"
                       checked={selectedProducts.includes(product.id)}
@@ -758,7 +773,7 @@ function CardsView({
                   </div>
                   
                   {/* Status Badges */}
-                  <div className="absolute top-3 left-3 flex flex-col space-y-1">
+                  <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col gap-1">
                     {product.is_featured && (
                       <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 shadow-sm">
                         <i className="ri-star-fill ml-1"></i>
@@ -774,7 +789,7 @@ function CardsView({
                   </div>
                   
                   {/* Stock Status Overlay */}
-                  <div className="absolute bottom-3 left-3">
+                  <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3">
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${stockStatus.color} shadow-sm`}>
                       {stockStatus.text}
                     </span>
@@ -782,18 +797,18 @@ function CardsView({
                 </div>
                 
                 {/* Product Info */}
-                <div className="p-4">
+                <div className="p-3 sm:p-4">
                   <div className="mb-3">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1 line-clamp-2">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1 line-clamp-2">
                       {getProductTitle(product.title)}
                     </h3>
-                    <p className="text-sm text-gray-500 line-clamp-1">
-                      {getCategoryName(product.category_name)}
+                    <p className="text-xs sm:text-sm text-gray-500 line-clamp-1">
+                      {getCategoryName(product.category)}
                     </p>
                   </div>
                   
                   <div className="flex items-center justify-between mb-4">
-                    <span className="text-xl font-bold text-blue-600">
+                    <span className="text-lg sm:text-xl font-bold text-blue-600">
                       {formatPrice(product.price)}
                     </span>
                     <div className="text-xs text-gray-400">
@@ -803,27 +818,27 @@ function CardsView({
                   
                   {/* Actions */}
                   <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                    <div className="flex space-x-1 rtl:space-x-reverse">
+                    <div className="flex gap-1 sm:gap-2">
                       <Link
                         href={`/admin/products/${product.id}`}
-                        className="text-blue-600 hover:text-blue-700 p-2 rounded-lg hover:bg-blue-50 transition-colors"
+                        className="text-blue-600 hover:text-blue-700 p-1.5 sm:p-2 rounded-lg hover:bg-blue-50 transition-colors"
                         title="عرض"
                       >
-                        <i className="ri-eye-line"></i>
+                        <i className="ri-eye-line text-sm sm:text-base"></i>
                       </Link>
                       <Link
                         href={`/admin/products/${product.id}/edit`}
-                        className="text-green-600 hover:text-green-700 p-2 rounded-lg hover:bg-green-50 transition-colors"
+                        className="text-green-600 hover:text-green-700 p-1.5 sm:p-2 rounded-lg hover:bg-green-50 transition-colors"
                         title="تعديل"
                       >
-                        <i className="ri-edit-line"></i>
+                        <i className="ri-edit-line text-sm sm:text-base"></i>
                       </Link>
                       <button
                         onClick={() => onDeleteProduct(product.id)}
-                        className="text-red-600 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-colors"
+                        className="text-red-600 hover:text-red-700 p-1.5 sm:p-2 rounded-lg hover:bg-red-50 transition-colors"
                         title="حذف"
                       >
-                        <i className="ri-delete-bin-line"></i>
+                        <i className="ri-delete-bin-line text-sm sm:text-base"></i>
                       </button>
                     </div>
                     

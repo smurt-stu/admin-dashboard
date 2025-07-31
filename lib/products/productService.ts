@@ -11,6 +11,41 @@ import { getAuthHeaders, handleApiError, buildQueryParams } from './utils';
 
 const BASE_URL = 'https://smart-ai-api.onrender.com/api/v1';
 
+// دالة لتحديد الحقول التي تم تعديلها فقط
+function getChangedFields(originalData: Partial<Product>, newData: Partial<Product>): Partial<Product> {
+  const changedFields: Partial<Product> = {};
+  
+  for (const [key, newValue] of Object.entries(newData)) {
+    const originalValue = originalData[key as keyof Product];
+    
+    // معالجة خاصة للحقول الحساسة
+    if (key === 'main_image') {
+      // لا نرسل main_image إذا كان URL وليس ملف جديد
+      if (newValue && typeof newValue === 'string' && newValue.startsWith('http')) {
+        continue; // تخطي هذا الحقل
+      }
+    }
+    
+    if (key === 'tags') {
+      // تحويل tags إلى string إذا كان array
+      const newTagsString = Array.isArray(newValue) ? newValue.join(', ') : newValue;
+      const originalTagsString = Array.isArray(originalValue) ? originalValue.join(', ') : originalValue;
+      
+      if (newTagsString !== originalTagsString) {
+        changedFields[key as keyof Product] = newTagsString as any;
+      }
+      continue;
+    }
+    
+    // مقارنة القيم لتحديد ما إذا كان الحقل قد تغير
+    if (JSON.stringify(newValue) !== JSON.stringify(originalValue)) {
+      changedFields[key as keyof Product] = newValue as any;
+    }
+  }
+  
+  return changedFields;
+}
+
 export class ProductService {
   // === PRODUCTS ===
   
@@ -53,13 +88,21 @@ export class ProductService {
     return handleApiError(response);
   }
 
-  static async updateProduct(id: string, data: Partial<Product>): Promise<Product> {
+  static async updateProduct(id: string, data: Partial<Product>, originalData?: Partial<Product>): Promise<Product> {
+    let updateData = data;
+    
+    // إذا تم توفير البيانات الأصلية، نرسل فقط الحقول المعدلة
+    if (originalData) {
+      updateData = getChangedFields(originalData, data);
+      console.log('Changed fields only:', updateData);
+    }
+    
     const response = await fetch(
       `${BASE_URL}/store/products/products/${id}/`,
       {
         method: 'PATCH',
         headers: getAuthHeaders(),
-        body: JSON.stringify(data)
+        body: JSON.stringify(updateData)
       }
     );
     return handleApiError(response);

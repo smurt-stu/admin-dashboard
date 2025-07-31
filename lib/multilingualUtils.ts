@@ -321,7 +321,7 @@ export function createProductData(formData: any): any {
     is_new_arrival: formData.is_new_arrival || false,
     is_on_sale: formData.is_on_sale || false,
     launch_date: formData.launch_date || undefined,
-    tags: formData.tags ? formData.tags.split(',').map((tag: string) => tag.trim()).filter(Boolean) : [],
+    tags: formData.tags || undefined,
     
     // === تحسين محركات البحث ===
     meta_title: formData.meta_title ? {
@@ -346,7 +346,8 @@ export function createProductData(formData: any): any {
     
     // === الصور ===
     cover_image: formData.cover_image || undefined,
-    main_image: formData.main_image || undefined,
+    // لا نرسل main_image إذا كان URL وليس ملف
+    main_image: formData.main_image && !formData.main_image.startsWith('http') ? formData.main_image : undefined,
     images: formData.images || []
   };
   

@@ -52,6 +52,7 @@ export default function DynamicFieldsTab({ formData, setFormData, selectedProduc
         setFieldGroups({});
       }
     } else {
+      console.log('No product type selected');
       setFieldSchema(null);
       setCustomFields({});
       setErrors({});
@@ -62,10 +63,40 @@ export default function DynamicFieldsTab({ formData, setFormData, selectedProduc
 
   // تحميل البيانات في وضع التعديل
   useEffect(() => {
-    if (isEditMode) {
-      // تحميل البيانات الموجودة في وضع التعديل
+    if (isEditMode && formData.custom_fields_data && Object.keys(formData.custom_fields_data).length > 0) {
+      console.log('Edit mode: Loading existing custom fields data');
+      console.log('Form data custom fields:', formData.custom_fields_data);
+      
+      // تحويل البيانات من المنتج إلى تنسيق CustomField
+      const editModeFields = Object.entries(formData.custom_fields_data).map(([fieldName, fieldValue]) => ({
+        name: fieldName,
+        label: { ar: fieldName, en: fieldName }, // استخدام اسم الحقل كتسمية مؤقتة
+        type: (typeof fieldValue === 'object' && fieldValue !== null ? 'multilingual' : 'text') as 'multilingual' | 'text',
+        required: false,
+        options: [],
+        description: '',
+        searchable: false,
+        filterable: false,
+        display_order: 0
+      }));
+      
+      console.log('Edit mode fields created:', editModeFields);
+      
+      // تنظيم الحقول في مجموعات
+      organizeFieldsIntoGroups(editModeFields);
+      
+      // تهيئة الحقول المخصصة بالقيم الموجودة
+      setCustomFields(formData.custom_fields_data);
     }
-  }, [isEditMode, formData, selectedProductType]);
+  }, [isEditMode, formData.custom_fields_data]);
+
+  // فحص إضافي للتأكد من أن selectedProductType يحتوي على settings
+  useEffect(() => {
+    if (selectedProductType && !selectedProductType.settings) {
+      console.log('Warning: Selected product type has no settings, attempting to reload...');
+      // يمكن إضافة منطق إضافي هنا إذا لزم الأمر
+    }
+  }, [selectedProductType]);
 
   const loadFieldSchema = async (productTypeId: string) => {
     try {
@@ -924,12 +955,28 @@ export default function DynamicFieldsTab({ formData, setFormData, selectedProduc
         console.log('customFields:', customFields);
         console.log('selectedProductType:', selectedProductType);
         
+        // فحص إضافي للتأكد من أن selectedProductType صحيح
+        if (!selectedProductType) {
+          console.log('No product type selected, showing empty state');
+          return (
+            <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+              <div className="text-center">
+                <i className="ri-settings-3-line text-4xl text-gray-400 mb-4"></i>
+                <h4 className="text-lg font-semibold text-gray-700 mb-2">يرجى تحديد نوع المنتج</h4>
+                <p className="text-gray-600 mb-4">
+                  يجب تحديد نوع المنتج أولاً لعرض الحقول المخصصة
+                </p>
+              </div>
+            </div>
+          );
+        }
+        
         if (isEditMode && formData.custom_fields_data && Object.keys(formData.custom_fields_data).length > 0) {
           // تحويل البيانات من المنتج إلى تنسيق CustomField
           fieldsToShow = Object.entries(formData.custom_fields_data).map(([fieldName, fieldValue]) => ({
             name: fieldName,
             label: { ar: fieldName, en: fieldName }, // استخدام اسم الحقل كتسمية مؤقتة
-            type: typeof fieldValue === 'object' && fieldValue !== null ? 'multilingual' : 'text',
+            type: (typeof fieldValue === 'object' && fieldValue !== null ? 'multilingual' : 'text') as 'multilingual' | 'text',
             required: false,
             options: [],
             description: '',
@@ -939,6 +986,7 @@ export default function DynamicFieldsTab({ formData, setFormData, selectedProduc
           }));
           
           console.log('Edit mode fields:', fieldsToShow);
+          console.log('Custom fields data from form:', formData.custom_fields_data);
         } else if (fieldSchema && fieldSchema.custom_fields && fieldSchema.custom_fields.length > 0) {
           fieldsToShow = fieldSchema.custom_fields;
           console.log('Schema fields:', fieldsToShow);
@@ -960,6 +1008,19 @@ export default function DynamicFieldsTab({ formData, setFormData, selectedProduc
         }
         
         console.log('Final fields to show:', fieldsToShow);
+        
+        // فحص إضافي للتأكد من أن البيانات صحيحة
+        if (fieldsToShow.length === 0 && isEditMode && formData.custom_fields_data && Object.keys(formData.custom_fields_data).length > 0) {
+          console.log('Warning: No fields to show but custom_fields_data exists');
+          console.log('Custom fields data:', formData.custom_fields_data);
+          console.log('Selected product type:', selectedProductType);
+        }
+        
+        // فحص إضافي للتأكد من أن selectedProductType يحتوي على settings
+        if (selectedProductType && !selectedProductType.settings) {
+          console.log('Warning: Selected product type has no settings');
+          console.log('Product type data:', selectedProductType);
+        }
         
         return fieldsToShow.length > 0 ? (
           <div className="space-y-6">
@@ -984,6 +1045,7 @@ export default function DynamicFieldsTab({ formData, setFormData, selectedProduc
               <div className="text-sm text-gray-500 bg-white p-3 rounded border">
                 <p className="font-medium mb-2">معلومات التصحيح:</p>
                 <p>نوع المنتج: {selectedProductType?.name || 'غير محدد'}</p>
+                <p>معرف نوع المنتج: {selectedProductType?.id || 'غير محدد'}</p>
                 <p>الحقول المخصصة في النوع: {selectedProductType?.settings?.custom_fields?.length || 0}</p>
                 <p>Field Schema: {fieldSchema ? 'محمل' : 'غير محمل'}</p>
                 <p>Field Groups: {Object.keys(fieldGroups).length} مجموعة</p>
@@ -1004,6 +1066,12 @@ export default function DynamicFieldsTab({ formData, setFormData, selectedProduc
                     <p className="text-xs">يجب إضافة حقول مخصصة لنوع المنتج من صفحة إدارة أنواع المنتجات</p>
                   </div>
                 )}
+                {!selectedProductType?.settings && (
+                  <div className="mt-2">
+                    <p className="font-medium text-red-600">تحذير: لا توجد إعدادات لنوع المنتج!</p>
+                    <p className="text-xs">يبدو أن نوع المنتج لا يحتوي على إعدادات، قد يكون هناك مشكلة في تحميل البيانات</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -1011,7 +1079,7 @@ export default function DynamicFieldsTab({ formData, setFormData, selectedProduc
       })()}
 
       {/* Product Type Settings */}
-      {selectedProductType.settings && (
+      {selectedProductType?.settings && (
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
           <h4 className="text-lg font-semibold text-gray-900 mb-4">إعدادات نوع المنتج</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
