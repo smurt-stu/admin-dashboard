@@ -351,48 +351,90 @@ export function createProductData(formData: any): any {
     images: formData.images || []
   };
   
-  // === الحقول المخصصة ===
-  // تحويل custom_fields إلى custom_fields_data بالشكل المتوقع من الباكند
+  // === الحقول المخصصة والمتغيرات ===
+  // تحويل custom_fields_data إلى variants إذا كان المنتج يدعم المتغيرات
   if (formData.custom_fields_data && Object.keys(formData.custom_fields_data).length > 0) {
-    const customFieldsData: Record<string, any> = {};
+    // إذا كان المنتج يدعم المتغيرات، نحول custom_fields_data إلى variants
+    // نتحقق من has_variants في formData أو في product_type إذا كان كائن
+    const hasVariants = formData.has_variants || 
+                       (formData.product_type && typeof formData.product_type === 'object' && formData.product_type.has_variants);
     
-    Object.entries(formData.custom_fields_data).forEach(([fieldName, fieldValue]) => {
-      // إذا كان الحقل يحتوي على معلومات إضافية (مثل type, label, options)
-      if (typeof fieldValue === 'object' && fieldValue !== null && !Array.isArray(fieldValue)) {
+    if (hasVariants) {
+      const variants: any[] = [];
+      
+      Object.entries(formData.custom_fields_data).forEach(([fieldName, fieldValue]) => {
         const fieldObj = fieldValue as any;
+        const value = fieldObj.value || fieldValue;
         
-        // إذا كان الحقل متعدد اللغات
-        if (fieldObj.ar !== undefined || fieldObj.en !== undefined) {
+        // إنشاء متغير جديد
+        const variant = {
+          name: fieldName,
+          sku: `${formData.sku || 'VAR'}-${fieldName}`,
+          price: formData.price || '0.00',
+          stock_quantity: 0,
+          is_in_stock: false,
+          effective_price: formData.price || '0.00',
+          options: {
+            [fieldName]: {
+              value: value,
+              type: fieldObj.type || 'text',
+              label: fieldObj.label || { ar: fieldName, en: fieldName },
+              required: fieldObj.required || false
+            }
+          }
+        };
+        
+        variants.push(variant);
+      });
+      
+      productData.variants = variants;
+    } else {
+      // إذا كان المنتج لا يدعم المتغيرات، نرسل كـ custom_fields_data
+      const customFieldsData: Record<string, any> = {};
+      
+      Object.entries(formData.custom_fields_data).forEach(([fieldName, fieldValue]) => {
+        // إذا كان الحقل يحتوي على معلومات إضافية (مثل type, label, options)
+        if (typeof fieldValue === 'object' && fieldValue !== null && !Array.isArray(fieldValue)) {
+          const fieldObj = fieldValue as any;
+          
+          // إذا كان الحقل متعدد اللغات
+          if (fieldObj.ar !== undefined || fieldObj.en !== undefined) {
+            customFieldsData[fieldName] = {
+              value: fieldValue,
+              type: 'multilingual',
+              label: { ar: fieldName, en: fieldName }, // سيتم تحديثه من الباكند
+              required: false
+            };
+          } else {
+            // إذا كان الحقل يحتوي على معلومات كاملة
+            customFieldsData[fieldName] = {
+              value: fieldObj.value || fieldValue,
+              type: fieldObj.type || 'text',
+              label: fieldObj.label || { ar: fieldName, en: fieldName },
+              required: fieldObj.required || false,
+              options: fieldObj.options || [],
+              searchable: fieldObj.searchable || false,
+              filterable: fieldObj.filterable || false
+            };
+          }
+        } else {
+          // إذا كان الحقل قيمة بسيطة
           customFieldsData[fieldName] = {
             value: fieldValue,
-            type: 'multilingual',
-            label: { ar: fieldName, en: fieldName }, // سيتم تحديثه من الباكند
+            type: 'text', // نوع افتراضي
+            label: { ar: fieldName, en: fieldName },
             required: false
           };
-        } else {
-          // إذا كان الحقل يحتوي على معلومات كاملة
-          customFieldsData[fieldName] = {
-            value: fieldObj.value || fieldValue,
-            type: fieldObj.type || 'text',
-            label: fieldObj.label || { ar: fieldName, en: fieldName },
-            required: fieldObj.required || false,
-            options: fieldObj.options || [],
-            searchable: fieldObj.searchable || false,
-            filterable: fieldObj.filterable || false
-          };
         }
-      } else {
-        // إذا كان الحقل قيمة بسيطة
-        customFieldsData[fieldName] = {
-          value: fieldValue,
-          type: 'text', // نوع افتراضي
-          label: { ar: fieldName, en: fieldName },
-          required: false
-        };
-      }
-    });
-    
-    productData.custom_fields_data = customFieldsData;
+      });
+      
+      productData.custom_fields_data = customFieldsData;
+    }
+  }
+  
+  // إضافة المتغيرات الموجودة في formData
+  if (formData.variants && Array.isArray(formData.variants)) {
+    productData.variants = formData.variants;
   }
   
   // إزالة الحقول الفارغة

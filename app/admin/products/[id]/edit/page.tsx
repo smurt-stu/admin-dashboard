@@ -523,9 +523,15 @@ export default function EditProductPage() {
       // إظهار رسالة الحفظ
       showToast(ProductToast.savingChanges());
       
+      // إضافة معلومات has_variants إلى formData
+      const formDataWithVariants = {
+        ...formData,
+        has_variants: selectedProductTypeWithSettings?.has_variants || false
+      };
+      
       // Create product data according to API guide
       logger.logDataLoad('Creating product data');
-      const productData = createProductData(formData);
+      const productData = createProductData(formDataWithVariants);
       
       // Validate multilingual data
       logger.logDataLoad('Validating multilingual data');
