@@ -201,6 +201,7 @@ function removeEmptyFields(data: any): any {
   const cleaned = { ...data };
   
   Object.keys(cleaned).forEach(key => {
+    // لا نزيل الحقول التي لها قيمة 0 أو false لأنها قيم صحيحة
     if (cleaned[key] === '' || cleaned[key] === null || cleaned[key] === undefined) {
       delete cleaned[key];
     } else if (Array.isArray(cleaned[key]) && cleaned[key].length === 0) {
@@ -283,8 +284,8 @@ export function createProductData(formData: any): any {
     // === التسعير ===
     price: parseFloat(formData.price || "0.00").toString(),
     compare_price: formData.compare_price ? parseFloat(formData.compare_price).toString() : undefined,
-    cost_price: formData.cost_price ? parseFloat(formData.cost_price).toString() : undefined,
-    discount_percentage: formData.discount_percentage !== undefined ? parseFloat(formData.discount_percentage).toString() : undefined,
+    cost_price: formData.cost_price !== undefined && formData.cost_price !== null ? parseFloat(formData.cost_price).toString() : undefined,
+    discount_percentage: formData.discount_percentage !== undefined && formData.discount_percentage !== null ? parseFloat(formData.discount_percentage).toString() : undefined,
     
     // === معلومات المنتج التقني ===
     sku: formData.sku || undefined,
@@ -307,7 +308,7 @@ export function createProductData(formData: any): any {
     
     // === الشحن والأبعاد ===
     requires_shipping: formData.requires_shipping !== false,
-    weight: formData.weight || undefined,
+    weight: formData.weight !== undefined && formData.weight !== null ? formData.weight.toString() : undefined,
     dimensions: formData.dimensions || undefined,
     
     // === الضمان والخدمة ===
@@ -352,98 +353,57 @@ export function createProductData(formData: any): any {
   };
   
   // === الحقول المخصصة والمتغيرات ===
-  // تحويل custom_fields_data إلى variants إذا كان المنتج يدعم المتغيرات
+  // إرسال الحقول المخصصة في جميع الحالات
   if (formData.custom_fields_data && Object.keys(formData.custom_fields_data).length > 0) {
-    // إذا كان المنتج يدعم المتغيرات، نحول custom_fields_data إلى variants
-    // نتحقق من has_variants في formData أو في product_type إذا كان كائن
-    const hasVariants = formData.has_variants || 
-                       (formData.product_type && typeof formData.product_type === 'object' && formData.product_type.has_variants);
+    console.log('Processing custom fields data:', formData.custom_fields_data);
     
-    console.log('Checking variants support:', { 
-      hasVariants, 
-      formDataHasVariants: formData.has_variants,
-      productTypeHasVariants: formData.product_type && typeof formData.product_type === 'object' ? formData.product_type.has_variants : 'N/A'
-    });
+    // إرسال الحقول المخصصة كـ custom_fields_data
+    const customFieldsData: Record<string, any> = {};
     
-    if (hasVariants) {
-      console.log('Converting custom_fields_data to variants');
-      const variants: any[] = [];
-      
-      Object.entries(formData.custom_fields_data).forEach(([fieldName, fieldValue]) => {
+    Object.entries(formData.custom_fields_data).forEach(([fieldName, fieldValue]) => {
+      // إذا كان الحقل يحتوي على معلومات إضافية (مثل type, label, options)
+      if (typeof fieldValue === 'object' && fieldValue !== null && !Array.isArray(fieldValue)) {
         const fieldObj = fieldValue as any;
-        const value = fieldObj.value || fieldValue;
         
-        // إنشاء متغير جديد
-        const variant = {
-          name: fieldName,
-          sku: `${formData.sku || 'VAR'}-${fieldName}`,
-          price: formData.price || '0.00',
-          stock_quantity: 0,
-          is_in_stock: false,
-          effective_price: formData.price || '0.00',
-          options: {
-            [fieldName]: {
-              value: value,
-              type: fieldObj.type || 'text',
-              label: fieldObj.label || { ar: fieldName, en: fieldName },
-              required: fieldObj.required || false
-            }
-          }
-        };
-        
-        variants.push(variant);
-      });
-      
-      productData.variants = variants;
-      console.log('Created variants:', variants);
-    } else {
-      console.log('Sending as custom_fields_data');
-      // إذا كان المنتج لا يدعم المتغيرات، نرسل كـ custom_fields_data
-      const customFieldsData: Record<string, any> = {};
-      
-      Object.entries(formData.custom_fields_data).forEach(([fieldName, fieldValue]) => {
-        // إذا كان الحقل يحتوي على معلومات إضافية (مثل type, label, options)
-        if (typeof fieldValue === 'object' && fieldValue !== null && !Array.isArray(fieldValue)) {
-          const fieldObj = fieldValue as any;
-          
-          // إذا كان الحقل متعدد اللغات
-          if (fieldObj.ar !== undefined || fieldObj.en !== undefined) {
-            customFieldsData[fieldName] = {
-              value: fieldValue,
-              type: 'multilingual',
-              label: { ar: fieldName, en: fieldName }, // سيتم تحديثه من الباكند
-              required: false
-            };
-          } else {
-            // إذا كان الحقل يحتوي على معلومات كاملة
-            customFieldsData[fieldName] = {
-              value: fieldObj.value || fieldValue,
-              type: fieldObj.type || 'text',
-              label: fieldObj.label || { ar: fieldName, en: fieldName },
-              required: fieldObj.required || false,
-              options: fieldObj.options || [],
-              searchable: fieldObj.searchable || false,
-              filterable: fieldObj.filterable || false
-            };
-          }
-        } else {
-          // إذا كان الحقل قيمة بسيطة
+        // إذا كان الحقل متعدد اللغات
+        if (fieldObj.ar !== undefined || fieldObj.en !== undefined) {
           customFieldsData[fieldName] = {
             value: fieldValue,
-            type: 'text', // نوع افتراضي
-            label: { ar: fieldName, en: fieldName },
+            type: 'multilingual',
+            label: { ar: fieldName, en: fieldName }, // سيتم تحديثه من الباكند
             required: false
           };
+        } else {
+          // إذا كان الحقل يحتوي على معلومات كاملة
+          customFieldsData[fieldName] = {
+            value: fieldObj.value || fieldValue,
+            type: fieldObj.type || 'text',
+            label: fieldObj.label || { ar: fieldName, en: fieldName },
+            required: fieldObj.required || false,
+            options: fieldObj.options || [],
+            searchable: fieldObj.searchable || false,
+            filterable: fieldObj.filterable || false
+          };
         }
-      });
-      
-      productData.custom_fields_data = customFieldsData;
-    }
+      } else {
+        // إذا كان الحقل قيمة بسيطة
+        customFieldsData[fieldName] = {
+          value: fieldValue,
+          type: 'text', // نوع افتراضي
+          label: { ar: fieldName, en: fieldName },
+          required: false
+        };
+      }
+    });
+    
+    productData.custom_fields_data = customFieldsData;
+    console.log('Custom fields data being sent:', customFieldsData);
   }
   
   // إضافة المتغيرات الموجودة في formData
   if (formData.variants && Array.isArray(formData.variants)) {
     productData.variants = formData.variants;
+    console.log('Variants being sent:', formData.variants);
   }
   
   // إزالة الحقول الفارغة
@@ -451,6 +411,13 @@ export function createProductData(formData: any): any {
   
   // طباعة البيانات للتصحيح
   console.log('Processed product data:', cleanedData);
+  console.log('Form data input:', {
+    cost_price: formData.cost_price,
+    discount_percentage: formData.discount_percentage,
+    weight: formData.weight,
+    dimensions: formData.dimensions,
+    custom_fields_data: formData.custom_fields_data
+  });
   
   return cleanedData;
 } 
