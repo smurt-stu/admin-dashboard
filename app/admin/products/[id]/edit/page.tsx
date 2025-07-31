@@ -431,7 +431,7 @@ export default function EditProductPage() {
       
       // التحقق من البيانات المحملة
       if (!detailedProductType) {
-        logger.logError('Product type data is null or undefined');
+        logger.logError('Product type data is null or undefined', 'No data received');
         setSelectedProductTypeWithSettings(null);
         return;
       }
@@ -487,9 +487,6 @@ export default function EditProductPage() {
         previousProductType: selectedProductTypeWithSettings?.id 
       });
       
-      // إعادة تعيين نوع المنتج المحدد قبل التحميل الجديد
-      setSelectedProductTypeWithSettings(null);
-      
       // تحميل نوع المنتج الجديد
       loadSelectedProductType(formData.product_type);
     } else {
@@ -497,7 +494,7 @@ export default function EditProductPage() {
       logger.logDataLoad('No product type selected, clearing settings');
       setSelectedProductTypeWithSettings(null);
     }
-  }, [formData.product_type, selectedProductTypeWithSettings?.id]);
+  }, [formData.product_type]); // إزالة selectedProductTypeWithSettings?.id من dependencies
 
   const handleInputChange = (field: string, value: any) => {
     logger.log('Input change', { field, value, currentTab: activeTab });
@@ -549,7 +546,12 @@ export default function EditProductPage() {
       logger.logDataLoad('Product updated successfully', { responseId: response?.id });
       
       // إظهار رسالة النجاح
-      const productName = formData.title || product?.title || 'المنتج';
+      const getProductName = (title: any) => {
+        if (typeof title === 'string') return title;
+        if (title && typeof title === 'object') return title.ar || title.en || '';
+        return '';
+      };
+      const productName = getProductName(formData.title) || getProductName(product?.title) || 'المنتج';
       showToast(ProductToast.productUpdated(productName));
       
       if (response?.id) {
@@ -579,12 +581,14 @@ export default function EditProductPage() {
       .replace(/^-+|-+$/g, '');
   };
 
-  const handleTitleChange = (value: string) => {
+  const handleTitleChange = (value: string | { ar: string; en: string }) => {
     logger.log('Title change', { value, currentTab: activeTab });
     handleInputChange('title', value);
     // التأكد من أن القيمة نص قبل تمريرها إلى generateSlug
-    const titleString = typeof value === 'string' ? value : String(value || '');
-    handleInputChange('slug', generateSlug(titleString));
+    const titleString = typeof value === 'string' ? value : (value?.ar || value?.en || '');
+    if (typeof titleString === 'string' && titleString.trim()) {
+      handleInputChange('slug', generateSlug(titleString));
+    }
   };
 
   const getCategoryDisplayName = (category: Category) => {
