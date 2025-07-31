@@ -1,7 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "npm run build:no-types",
-  "ignoreCommand": "echo 'Skipping type checking for faster builds'",
+  "buildCommand": "npm run build",
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "framework": "nextjs",
