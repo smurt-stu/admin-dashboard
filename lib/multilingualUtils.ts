@@ -440,9 +440,35 @@ export function createProductData(formData: any): any {
   }
   
   // إضافة المتغيرات الموجودة في formData
-  if (formData.variants && Array.isArray(formData.variants)) {
-    productData.variants = formData.variants;
-    console.log('Variants being sent:', formData.variants);
+  if (formData.variants && Array.isArray(formData.variants) && formData.variants.length > 0) {
+    // تحويل المتغيرات إلى التنسيق المطلوب من الباكند
+    const formattedVariants = formData.variants.map((variant: any, index: number) => ({
+      name: variant.name || '',
+      options: variant.options || {},
+      price_modifier: (() => {
+        // تحويل السعر إلى تعديل السعر
+        if (variant.price_modifier !== undefined) {
+          return variant.price_modifier.toString();
+        }
+        if (variant.price !== undefined) {
+          return variant.price.toString();
+        }
+        return '0.00';
+      })(),
+      stock_quantity: variant.stock_quantity || 0,
+      min_stock_alert: variant.min_stock_alert || 5,
+      weight: variant.weight || undefined,
+      dimensions: variant.dimensions || undefined,
+      display_order: variant.display_order || index + 1,
+      is_active: variant.is_active !== false,
+      settings: variant.settings || {
+        is_active: true,
+        allow_purchase: true
+      }
+    }));
+    
+    productData.variants_data = formattedVariants;
+    console.log('Formatted variants being sent:', formattedVariants);
   }
   
   // إزالة الحقول الفارغة

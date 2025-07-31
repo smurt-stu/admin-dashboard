@@ -31,7 +31,19 @@ export default function VariantsTab({ product, formData, handleInputChange, sele
     if (product.variants && product.variants.length > 0 && !isInitializedRef.current) {
       const initialVariants = product.variants.map((variant: any) => ({
         ...variant,
-        id: variant.id || Date.now() + Math.random()
+        id: variant.id || Date.now() + Math.random(),
+        // تحويل البيانات إلى التنسيق المطلوب
+        name: variant.name || '',
+        options: variant.options || {},
+        price_modifier: variant.price_modifier || variant.price || '0.00',
+        stock_quantity: variant.stock_quantity || 0,
+        min_stock_alert: variant.min_stock_alert || 5,
+        display_order: variant.display_order || 1,
+        is_active: variant.is_active !== false,
+        settings: variant.settings || {
+          is_active: true,
+          allow_purchase: true
+        }
       }));
       setVariants(initialVariants);
       previousVariantsRef.current = initialVariants;
@@ -47,7 +59,23 @@ export default function VariantsTab({ product, formData, handleInputChange, sele
     const variantsChanged = JSON.stringify(variants) !== JSON.stringify(previousVariantsRef.current);
     
     if (variantsChanged && isInitializedRef.current) {
-      handleInputChange('variants', variants);
+      // تحويل المتغيرات إلى التنسيق المطلوب قبل الإرسال
+      const formattedVariants = variants.map((variant: any, index: number) => ({
+        ...variant,
+        price_modifier: (() => {
+          if (variant.price_modifier !== undefined) {
+            return variant.price_modifier.toString();
+          }
+          if (variant.price !== undefined) {
+            return variant.price.toString();
+          }
+          return '0.00';
+        })(),
+        display_order: variant.display_order || index + 1,
+        is_active: variant.is_active !== false
+      }));
+      
+      handleInputChange('variants', formattedVariants);
       previousVariantsRef.current = [...variants];
     }
   }, [variants, handleInputChange]);
@@ -57,8 +85,22 @@ export default function VariantsTab({ product, formData, handleInputChange, sele
       const variantToAdd = {
         ...newVariant,
         id: Date.now() + Math.random(),
-        is_in_stock: newVariant.stock_quantity > 0,
-        effective_price: newVariant.price
+        name: newVariant.name,
+        options: newVariant.options || {},
+        price_modifier: (() => {
+          if (newVariant.price) {
+            return newVariant.price.toString();
+          }
+          return '0.00';
+        })(),
+        stock_quantity: newVariant.stock_quantity || 0,
+        min_stock_alert: 5,
+        display_order: variants.length + 1,
+        is_active: true,
+        settings: {
+          is_active: true,
+          allow_purchase: true
+        }
       };
       
       setVariants([...variants, variantToAdd]);
@@ -88,8 +130,9 @@ export default function VariantsTab({ product, formData, handleInputChange, sele
         if (field === 'stock_quantity') {
           updatedVariant.is_in_stock = value > 0;
         }
-        if (field === 'price') {
-          updatedVariant.effective_price = value;
+        if (field === 'price_modifier') {
+          // تحويل السعر إلى تعديل السعر
+          updatedVariant.price_modifier = value.toString();
         }
         
         return updatedVariant;
@@ -140,7 +183,7 @@ export default function VariantsTab({ product, formData, handleInputChange, sele
     }
 
     return Object.entries(options).map(([key, value]) => (
-      <span key={key} className="inline-block text-xs text-gray-600">
+      <span key={key} className="inline-block text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded mr-1 mb-1">
         <span className="font-medium">{key}:</span> {String(value)}
       </span>
     ));
@@ -255,23 +298,23 @@ export default function VariantsTab({ product, formData, handleInputChange, sele
                         {/* السعر */}
                         <div>
                           <label className="block text-xs font-medium text-gray-500 mb-1">السعر</label>
-                          {isEditing(variant.id, 'price') ? (
+                          {isEditing(variant.id, 'price_modifier') ? (
                             <input
                               type="number"
                               step="0.01"
-                              value={variant.effective_price || variant.price || ''}
-                              onChange={(e) => handleVariantChange(variant.id, 'price', e.target.value)}
+                              value={variant.price_modifier || ''}
+                              onChange={(e) => handleVariantChange(variant.id, 'price_modifier', e.target.value)}
                               onBlur={stopEditing}
                               onKeyPress={(e) => e.key === 'Enter' && stopEditing()}
                               className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent"
-                              placeholder="السعر"
+                              placeholder="تعديل السعر"
                             />
                           ) : (
                             <div 
                               className="text-sm font-semibold text-gray-900 cursor-pointer hover:text-blue-600 transition-colors"
-                              onClick={() => startEditing(variant.id, 'price')}
+                              onClick={() => startEditing(variant.id, 'price_modifier')}
                             >
-                              {variant.effective_price || variant.price ? `${variant.effective_price || variant.price} د.ك` : 'غير محدد'}
+                              {variant.price_modifier ? `${variant.price_modifier} د.ك` : 'غير محدد'}
                             </div>
                           )}
                         </div>
@@ -326,13 +369,18 @@ export default function VariantsTab({ product, formData, handleInputChange, sele
                       </div>
                     </div>
 
-                    {/* الخيارات */}
-                    <div className="mt-3 pt-3 border-t border-gray-200">
-                      <label className="block text-xs font-medium text-gray-500 mb-1">الخيارات</label>
-                      <div className="flex flex-wrap gap-2">
-                        {renderOptions(variant.options)}
-                      </div>
-                    </div>
+                                            {/* الخيارات */}
+                        <div className="mt-3 pt-3 border-t border-gray-200">
+                          <label className="block text-xs font-medium text-gray-500 mb-1">الخيارات</label>
+                          <div className="flex flex-wrap gap-2">
+                            {renderOptions(variant.options)}
+                          </div>
+                          {Object.keys(variant.options || {}).length === 0 && (
+                            <div className="text-xs text-gray-400 mt-1">
+                              يمكنك إضافة خيارات مثل اللون والمقاس
+                            </div>
+                          )}
+                        </div>
                   </div>
                 ))}
               </div>
@@ -387,14 +435,14 @@ export default function VariantsTab({ product, formData, handleInputChange, sele
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">السعر</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">تعديل السعر</label>
                     <input
                       type="number"
                       step="0.01"
                       value={newVariant.price}
                       onChange={(e) => setNewVariant({ ...newVariant, price: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="السعر"
+                      placeholder="تعديل السعر (+10 للزيادة، -5 للخصم)"
                     />
                   </div>
                   <div>

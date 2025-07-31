@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface VariantsTabProps {
   formData: any;
@@ -9,7 +9,7 @@ interface VariantsTabProps {
 }
 
 export default function VariantsTab({ formData, setFormData, selectedProductType }: VariantsTabProps) {
-  const [variants, setVariants] = useState<any[]>([]);
+  const [variants, setVariants] = useState<any[]>(formData.variants || []);
   const [showAddVariant, setShowAddVariant] = useState(false);
   const [newVariant, setNewVariant] = useState({
     name: '',
@@ -19,9 +19,52 @@ export default function VariantsTab({ formData, setFormData, selectedProductType
     options: {}
   });
 
+  // تحديث formData عند تغيير المتغيرات
+  useEffect(() => {
+    // تحويل المتغيرات إلى التنسيق المطلوب قبل الإرسال
+    const formattedVariants = variants.map((variant: any, index: number) => ({
+      ...variant,
+      price_modifier: (() => {
+        if (variant.price_modifier !== undefined) {
+          return variant.price_modifier.toString();
+        }
+        if (variant.price !== undefined) {
+          return variant.price.toString();
+        }
+        return '0.00';
+      })(),
+      display_order: variant.display_order || index + 1,
+      is_active: variant.is_active !== false
+    }));
+    
+    setFormData(prev => ({
+      ...prev,
+      variants: formattedVariants
+    }));
+  }, [variants, setFormData]);
+
   const handleAddVariant = () => {
     if (newVariant.name && newVariant.sku) {
-      setVariants([...variants, { ...newVariant, id: Date.now() }]);
+      const variantToAdd = {
+        name: newVariant.name,
+        options: newVariant.options || {},
+        price_modifier: (() => {
+          if (newVariant.price) {
+            return newVariant.price.toString();
+          }
+          return '0.00';
+        })(),
+        stock_quantity: newVariant.stock_quantity || 0,
+        min_stock_alert: 5,
+        display_order: variants.length + 1,
+        is_active: true,
+        settings: {
+          is_active: true,
+          allow_purchase: true
+        }
+      };
+      
+      setVariants([...variants, { ...variantToAdd, id: Date.now() }]);
       setNewVariant({
         name: '',
         sku: '',
@@ -38,9 +81,20 @@ export default function VariantsTab({ formData, setFormData, selectedProductType
   };
 
   const handleVariantChange = (id: number, field: string, value: any) => {
-    setVariants(variants.map(v => 
-      v.id === id ? { ...v, [field]: value } : v
-    ));
+    setVariants(variants.map(v => {
+      if (v.id === id) {
+        const updatedVariant = { ...v, [field]: value };
+        
+        // تحديث الحقول المرتبطة
+        if (field === 'price_modifier') {
+          // تحويل السعر إلى تعديل السعر
+          updatedVariant.price_modifier = value.toString();
+        }
+        
+        return updatedVariant;
+      }
+      return v;
+    }));
   };
 
   return (
@@ -69,7 +123,7 @@ export default function VariantsTab({ formData, setFormData, selectedProductType
                     <tr>
                       <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المتغير</th>
                       <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">السعر</th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تعديل السعر</th>
                       <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المخزون</th>
                       <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراءات</th>
                     </tr>
@@ -99,10 +153,10 @@ export default function VariantsTab({ formData, setFormData, selectedProductType
                           <input
                             type="number"
                             step="0.01"
-                            value={variant.price}
-                            onChange={(e) => handleVariantChange(variant.id, 'price', e.target.value)}
+                            value={variant.price_modifier || variant.price || ''}
+                            onChange={(e) => handleVariantChange(variant.id, 'price_modifier', e.target.value)}
                             className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            placeholder="السعر"
+                            placeholder="تعديل السعر"
                           />
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -161,14 +215,14 @@ export default function VariantsTab({ formData, setFormData, selectedProductType
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">السعر</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">تعديل السعر</label>
                     <input
                       type="number"
                       step="0.01"
                       value={newVariant.price}
                       onChange={(e) => setNewVariant({ ...newVariant, price: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="السعر"
+                      placeholder="تعديل السعر (+10 للزيادة، -5 للخصم)"
                     />
                   </div>
                   <div>
