@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { ProductService, CategoryService, Product, Category, PaginatedResponse } from '../../../lib/products';
 import { useToast, ProductToast } from '../../../components/ui/toast';
@@ -40,9 +40,14 @@ export default function ProductsPage() {
   useEffect(() => {
     loadProducts();
     loadCategories();
-  }, [filters]);
+  }, []); // تحميل البيانات مرة واحدة فقط عند تحميل الصفحة
 
-  const loadProducts = async () => {
+  // تحميل البيانات عند تغيير الفلاتر
+  useEffect(() => {
+    loadProducts();
+  }, [filters.search, filters.category, filters.is_featured, filters.is_bestseller, filters.ordering, filters.page]);
+
+  const loadProducts = useCallback(async () => {
     try {
       setLoading(true);
       showToast(ProductToast.loadingData());
@@ -71,9 +76,9 @@ export default function ProductsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters, showToast]);
 
-  const loadCategories = async () => {
+  const loadCategories = useCallback(async () => {
     try {
       const response = await CategoryService.getCategories({ is_active: true });
       setCategories(response?.results || []);
@@ -81,7 +86,7 @@ export default function ProductsPage() {
       console.error('Error loading categories:', err);
       setCategories([]);
     }
-  };
+  }, []);
 
   const handleFilterChange = (key: keyof ProductFilters, value: string | number) => {
     setFilters(prev => ({
